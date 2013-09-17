@@ -19,7 +19,7 @@
     ]
   , "repository"      : {
         "type"               : "git"
-      , "url"                : "https://github.com/rvagg/deferred-leveldown.git"
+      , "url"                : "https://github.com/Level/deferred-leveldown.git"
     }
   , "homepage"        : "https://github.com/rvagg/deferred-leveldown"
   , "keywords": [
