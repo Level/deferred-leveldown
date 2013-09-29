@@ -7,7 +7,15 @@ DeferredLevelDOWN
 
 [![Build Status](https://secure.travis-ci.org/rvagg/deferred-leveldown.png)](http://travis-ci.org/rvagg/deferred-leveldown)
 
-[![NPM](https://nodei.co/npm/deferred-leveldown.png?stars&downloads)](https://nodei.co/npm/deferred-leveldown/) [![NPM](https://nodei.co/npm-dl/deferred-leveldown.png)](https://nodei.co/npm/deferred-leveldown/)
+[![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/) [![NPM](https://nodei.co/npm-dl/deferred-leveldown.png)](https://nodei.co/npm/deferred-leveldown/)
+
+**DeferredLevelDOWN** implements the basic [AbstractLevelDOWN](https://github.com/rvagg/node-abstract-leveldown) API so it can be used as a drop-in replacement where LevelDOWN is needed.
+
+`put()`, `get()`, `del()` and `batch()` operations are all queued and kept in memory until a new LevelDOWN-compatible object can be supplied.
+
+The `setDb(db)` method is used to supply a new LevelDOWN object. Once received, all queued operations are replayed against that object, in order.
+
+`batch()` operations will all be replayed as the array form. Chained-batch operations are converted before being stored.
 
 Contributing
 ------------
