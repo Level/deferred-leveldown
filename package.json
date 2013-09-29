@@ -37,7 +37,7 @@
         "tape"               : "~1.0.4"
     }
   , "scripts"         : {
-        "test"               : "tap test/*-test.js --stderr"
+        "test"               : "node test.js"
     }
   , "license"         : "MIT"
 }
