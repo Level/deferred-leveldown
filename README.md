@@ -7,7 +7,7 @@ DeferredLevelDOWN
 
 [![Build Status](https://secure.travis-ci.org/Level/deferred-leveldown.png)](http://travis-ci.org/rvagg/deferred-leveldown)
 
-[![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/) [![NPM](https://nodei.co/npm-dl/deferred-leveldown.png)](https://nodei.co/npm/deferred-leveldown/)
+[![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/)
 
 **DeferredLevelDOWN** implements the basic [AbstractLevelDOWN](https://github.com/rvagg/node-abstract-leveldown) API so it can be used as a drop-in replacement where LevelDOWN is needed.
 
