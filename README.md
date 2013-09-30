@@ -5,7 +5,7 @@ DeferredLevelDOWN
 
 ![LevelDB Logo](https://twimg0-a.akamaihd.net/profile_images/3360574989/92fc472928b444980408147e5e5db2fa_bigger.png)
 
-[![Build Status](https://secure.travis-ci.org/rvagg/deferred-leveldown.png)](http://travis-ci.org/rvagg/deferred-leveldown)
+[![Build Status](https://secure.travis-ci.org/Level/deferred-leveldown.png)](http://travis-ci.org/rvagg/deferred-leveldown)
 
 [![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/) [![NPM](https://nodei.co/npm-dl/deferred-leveldown.png)](https://nodei.co/npm/deferred-leveldown/)
 
