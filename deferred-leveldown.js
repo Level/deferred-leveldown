@@ -3,7 +3,7 @@ var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
 
 function DeferredLevelDOWN (location) {
-  AbstractLevelDOWN.call(this, location)
+  AbstractLevelDOWN.call(this, typeof location == 'string' ? location : '') // optional location, who cares?
   this._db         = undefined
   this._operations = []
 }
