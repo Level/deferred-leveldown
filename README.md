@@ -46,10 +46,10 @@ DeferredLevelDOWN is only possible due to the excellent work of the following co
 <tr><th align="left">James Halliday</th><td><a href="https://github.com/substack">GitHub/substack</a></td><td><a href="https://twitter.com/substack">Twitter/@substack</a></td></tr>
 </tbody></table>
 
-<a name="licence"></a>
-Licence &amp; copyright
+<a name="license"></a>
+License &amp; copyright
 -------------------
 
-Copyright (c) 2013 DeferredLevelDOWN contributors (listed above).
+Copyright (c) 2014 DeferredLevelDOWN contributors (listed above).
 
-DeferredLevelDOWN is licensed under an MIT +no-false-attribs license. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE file for more details.
+DeferredLevelDOWN is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE.md file for more details.
