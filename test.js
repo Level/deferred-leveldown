@@ -47,27 +47,27 @@ test('many operations', function (t) {
         if (puts++ === 0) {
           t.equal(key, 'foo1', 'correct key')
           t.equal(value, 'bar1', 'correct value')
-          t.deepEqual({}, options, 'empty options')
+          t.deepEqual(options, {}, 'empty options')
         } else {
           t.equal(key, 'foo2', 'correct key')
           t.equal(value, 'bar2', 'correct value')
-          t.deepEqual({}, options, 'empty options')
+          t.deepEqual(options, {}, 'empty options')
         }
         callback('put' + puts)
       }
     , get: function (key, options, callback) {
         if (gets++ === 0) {
           t.equal('woo1', key, 'correct key')
-          t.deepEqual({}, options, 'empty options')
+          t.deepEqual(options, { asBuffer: true }, 'empty options')
         } else {
           t.equal('woo2', key, 'correct key')
-          t.deepEqual({}, options, 'empty options')
+          t.deepEqual(options, { asBuffer: true }, 'empty options')
         }
         callback('gets' + gets)
       }
     , del: function (key, options, callback) {
         t.equal('blergh', key, 'correct key')
-        t.deepEqual({}, options, 'empty options')
+        t.deepEqual(options, {}, 'empty options')
         callback('del')
       }
     , batch: function (arr, options, callback) {
