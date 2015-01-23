@@ -3,7 +3,7 @@ DeferredLevelDOWN
 
 **A mock LevelDOWN implementation that queues operations while a real LevelDOWN instance is being opened.**
 
-![LevelDB Logo](https://twimg0-a.akamaihd.net/profile_images/3360574989/92fc472928b444980408147e5e5db2fa_bigger.png)
+<img alt="LevelDB Logo" height="100" src="http://leveldb.org/img/logo.svg">
 
 [![Build Status](https://secure.travis-ci.org/Level/deferred-leveldown.png)](http://travis-ci.org/rvagg/deferred-leveldown)
 
@@ -50,6 +50,6 @@ DeferredLevelDOWN is only possible due to the excellent work of the following co
 License &amp; copyright
 -------------------
 
-Copyright (c) 2014 DeferredLevelDOWN contributors (listed above).
+Copyright (c) 2013-2015 DeferredLevelDOWN contributors (listed above).
 
 DeferredLevelDOWN is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE.md file for more details.
