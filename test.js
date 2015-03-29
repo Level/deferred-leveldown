@@ -99,3 +99,35 @@ test('many operations', function (t) {
 
   t.end()
 })
+
+test('iterators', function (t) {
+  var ld = new DeferredLevelDOWN('loc')
+  var it = ld.iterator()
+  var nextFirst = false
+
+  it.next(function (err, key, value) {
+    nextFirst = true
+    t.error(err)
+    t.equal(key, 'key')
+    t.equal(value, 'value')
+  })
+
+  it.end(function (err) {
+    t.error(err)
+    t.ok(nextFirst)
+    t.end()
+  })
+
+  ld.setDb({ iterator: function (options) {
+    return {
+        next : function (cb) {
+          cb(null, 'key', 'value')
+        }
+      , end : function (cb) {
+        process.nextTick(cb)
+      }
+    }
+  }})
+
+  t.end()
+})
