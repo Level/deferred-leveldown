@@ -30,7 +30,7 @@
   ],
   "main": "deferred-leveldown.js",
   "dependencies": {
-    "abstract-leveldown": "~0.12.1"
+    "abstract-leveldown": "~2.1.2"
   },
   "devDependencies": {
     "tape": "~1.0.4"
