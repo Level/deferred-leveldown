@@ -129,5 +129,7 @@ test('iterators', function (t) {
     }
   }})
 
+  t.ok(require('./').DeferredIterator)
+
   t.end()
 })
