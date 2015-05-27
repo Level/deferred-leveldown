@@ -2,43 +2,61 @@ var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
   , DeferredIterator  = require('./deferred-iterator')
 
-function DeferredLevelDOWN (location) {
-  AbstractLevelDOWN.call(this, typeof location == 'string' ? location : '') // optional location, who cares?
-  this._db         = undefined
+  , deferrables       = 'put get del batch approximateSize'.split(' ')
+
+function DeferredLevelDOWN (db) {
+  AbstractLevelDOWN.call(this, '')
+  this._db         = db
   this._operations = []
   this._iterators  = []
 }
 
 util.inherits(DeferredLevelDOWN, AbstractLevelDOWN)
 
-// called by LevelUP when we have a real DB to take its place
-DeferredLevelDOWN.prototype.setDb = function (db) {
-  this._db = db
-  this._operations.forEach(function (op) {
-    db[op.method].apply(db, op.args)
-  })
-  this._iterators.forEach(function (it) {
-    it.setDb(db)
-  })
-}
-
 DeferredLevelDOWN.prototype._open = function (options, callback) {
-  return process.nextTick(callback)
+  var self = this
+
+  this._db.open(options, function (err) {
+    if (err) return callback(err)
+
+    self._operations.forEach(function (op) {
+      self._db[op.method].apply(self._db, op.args)
+    })
+    self._iterators.forEach(function (it) {
+      it.setDb(self._db)
+    })
+    open(self)
+    callback()
+  })
 }
 
-// queue a new deferred operation
-DeferredLevelDOWN.prototype._operation = function (method, args) {
-  if (this._db)
-    return this._db[method].apply(this._db, args)
-  this._operations.push({ method: method, args: args })
+DeferredLevelDOWN.prototype._close = function (callback) {
+  var self = this
+
+  this._db.close(function (err) {
+    if (err) return callback(err)
+    closed(self)
+    callback()
+  })
 }
 
-// deferrables
-'put get del batch approximateSize'.split(' ').forEach(function (m) {
-  DeferredLevelDOWN.prototype['_' + m] = function () {
-    this._operation(m, arguments)
-  }
-})
+function open (obj) {
+  deferrables.forEach(function (m) {
+    obj['_' + m] = function () {
+      this._db[m].apply(this._db, arguments)
+    }
+  })
+}
+
+function closed (obj) {
+  deferrables.forEach(function (m) {
+    obj['_' + m] = function () {
+      this._operations.push({ method: m, args: arguments })
+    }
+  })
+}
+
+closed(DeferredLevelDOWN.prototype)
 
 DeferredLevelDOWN.prototype._isBuffer = function (obj) {
   return Buffer.isBuffer(obj)
