@@ -11,11 +11,24 @@ DeferredLevelDOWN
 
 **DeferredLevelDOWN** implements the basic [AbstractLevelDOWN](https://github.com/rvagg/node-abstract-leveldown) API so it can be used as a drop-in replacement where LevelDOWN is needed.
 
-`put()`, `get()`, `del()` and `batch()` operations are all queued and kept in memory until a new LevelDOWN-compatible object can be supplied.
-
-The `setDb(db)` method is used to supply a new LevelDOWN object. Once received, all queued operations are replayed against that object, in order.
+`put()`, `get()`, `del()` and `batch()` operations are all queued and kept in memory until the LevelDOWN-compatible object has been opened through **DeferredLevelDOWN**'s `open()` method.
 
 `batch()` operations will all be replayed as the array form. Chained-batch operations are converted before being stored.
+
+```js
+var Deferred  = require('deferred-leveldown')
+  , LevelDOWN = require('leveldown')
+
+var db = Deferred(LevelDOWN('location'))
+
+db.put('foo', 'bar', function (err) {
+
+})
+
+db.open(function (err) {
+  // ...
+})
+```
 
 Contributing
 ------------

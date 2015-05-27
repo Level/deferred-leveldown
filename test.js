@@ -3,46 +3,35 @@ var test              = require('tape')
 
 test('single operation', function (t) {
   var called = false
-  var ld = new DeferredLevelDOWN('loc')
+  var db = {
+      put: function (key, value, options, callback) {
+        t.equal(key, 'foo', 'correct key')
+        t.equal(value, 'bar', 'correct value')
+        t.deepEqual({}, options, 'empty options')
+        callback('called')
+      }
+    , open: function (options, callback) {
+        process.nextTick(callback)
+      }
+  }
+
+  var ld = new DeferredLevelDOWN(db)
   ld.put('foo', 'bar', function (v) {
     called = v
   })
   t.ok(called === false, 'not called')
-  ld.setDb({ put: function (key, value, options, callback) {
-    t.equal(key, 'foo', 'correct key')
-    t.equal(value, 'bar', 'correct value')
-    t.deepEqual({}, options, 'empty options')
-    callback('called')
-  }})
 
-  t.ok(called === 'called', 'function called')
+  ld.open(function (err) {
+    t.error(err)
 
-  t.end()
+    t.ok(called === 'called', 'function called')
+    t.end()
+  })
 })
 
 test('many operations', function (t) {
   var calls = []
-  var ld = new DeferredLevelDOWN('loc')
-    , puts    = 0
-    , gets    = 0
-    , batches = 0
-
-  ld.put('foo1', 'bar1', function (v) { calls.push({ type: 'put', key: 'foo1', v: v }) })
-  ld.get('woo1', function (v) { calls.push({ type: 'get', key: 'woo1', v: v }) })
-  ld.put('foo2', 'bar2', function (v) { calls.push({ type: 'put', key: 'foo2', v: v }) })
-  ld.get('woo2', function (v) { calls.push({ type: 'get', key: 'woo2', v: v }) })
-  ld.del('blergh', function (v) { calls.push({ type: 'del', key: 'blergh', v: v }) })
-  ld.batch([
-      { type: 'put', key: 'k1', value: 'v1' }
-    , { type: 'put', key: 'k2', value: 'v2' }
-   ], function () { calls.push({ type: 'batch', keys: 'k1,k2' }) })
-  ld.batch().put('k3', 'v3').put('k4', 'v4').write(function () {
-    calls.push({ type: 'batch', keys: 'k3,k4' })
-  })
-
-  t.ok(calls.length === 0, 'not called')
-
-  ld.setDb({
+  var db = {
       put: function (key, value, options, callback) {
         if (puts++ === 0) {
           t.equal(key, 'foo1', 'correct key')
@@ -84,24 +73,68 @@ test('many operations', function (t) {
         }
         callback('batches' + batches)
       }
+    , open: function (options, callback) {
+        process.nextTick(callback)
+      }
+  }
+
+  var ld = new DeferredLevelDOWN(db)
+    , puts    = 0
+    , gets    = 0
+    , batches = 0
+
+  ld.put('foo1', 'bar1', function (v) { calls.push({ type: 'put', key: 'foo1', v: v }) })
+  ld.get('woo1', function (v) { calls.push({ type: 'get', key: 'woo1', v: v }) })
+  ld.put('foo2', 'bar2', function (v) { calls.push({ type: 'put', key: 'foo2', v: v }) })
+  ld.get('woo2', function (v) { calls.push({ type: 'get', key: 'woo2', v: v }) })
+  ld.del('blergh', function (v) { calls.push({ type: 'del', key: 'blergh', v: v }) })
+  ld.batch([
+      { type: 'put', key: 'k1', value: 'v1' }
+    , { type: 'put', key: 'k2', value: 'v2' }
+   ], function () { calls.push({ type: 'batch', keys: 'k1,k2' }) })
+  ld.batch().put('k3', 'v3').put('k4', 'v4').write(function () {
+    calls.push({ type: 'batch', keys: 'k3,k4' })
   })
 
-  t.equal(calls.length, 7, 'all functions called')
-  t.deepEqual(calls, [
-      { type: 'put', key: 'foo1', v: 'put1' }
-    , { type: 'get', key: 'woo1', v: 'gets1' }
-    , { type: 'put', key: 'foo2', v: 'put2' }
-    , { type: 'get', key: 'woo2', v: 'gets2' }
-    , { type: 'del', key: 'blergh', v: 'del' }
-    , { type: 'batch', keys: 'k1,k2' }
-    , { type: 'batch', keys: 'k3,k4' }
-  ], 'calls correctly behaved')
+  t.ok(calls.length === 0, 'not called')
 
-  t.end()
+  ld.open(function (err) {
+    t.error(err)
+
+    t.equal(calls.length, 7, 'all functions called')
+    t.deepEqual(calls, [
+        { type: 'put', key: 'foo1', v: 'put1' }
+      , { type: 'get', key: 'woo1', v: 'gets1' }
+      , { type: 'put', key: 'foo2', v: 'put2' }
+      , { type: 'get', key: 'woo2', v: 'gets2' }
+      , { type: 'del', key: 'blergh', v: 'del' }
+      , { type: 'batch', keys: 'k1,k2' }
+      , { type: 'batch', keys: 'k3,k4' }
+    ], 'calls correctly behaved')
+
+    t.end()
+  })
 })
 
 test('iterators', function (t) {
-  var ld = new DeferredLevelDOWN('loc')
+  t.plan(7)
+
+  var db = {
+      iterator: function (options) {
+        return {
+            next : function (cb) {
+              cb(null, 'key', 'value')
+            }
+          , end : function (cb) {
+            process.nextTick(cb)
+          }
+        }
+      }
+    , open: function (options, callback) {
+        process.nextTick(callback)
+      }
+  }
+  var ld = new DeferredLevelDOWN(db)
   var it = ld.iterator()
   var nextFirst = false
 
@@ -115,21 +148,12 @@ test('iterators', function (t) {
   it.end(function (err) {
     t.error(err)
     t.ok(nextFirst)
-    t.end()
   })
 
-  ld.setDb({ iterator: function (options) {
-    return {
-        next : function (cb) {
-          cb(null, 'key', 'value')
-        }
-      , end : function (cb) {
-        process.nextTick(cb)
-      }
-    }
-  }})
+  ld.open(function (err) {
+    t.error(err)
+  })
 
   t.ok(require('./').DeferredIterator)
-
-  t.end()
 })
+
