@@ -22,9 +22,11 @@ DeferredLevelDOWN.prototype._open = function (options, callback) {
     self._operations.forEach(function (op) {
       self._db[op.method].apply(self._db, op.args)
     })
+    self._operations = []
     self._iterators.forEach(function (it) {
       it.setDb(self._db)
     })
+    self._iterators = []
     open(self)
     callback()
   })
