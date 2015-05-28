@@ -117,7 +117,7 @@ test('many operations', function (t) {
 })
 
 test('iterators', function (t) {
-  t.plan(7)
+  t.plan(8)
 
   var db = {
       iterator: function (options) {
@@ -152,6 +152,11 @@ test('iterators', function (t) {
 
   ld.open(function (err) {
     t.error(err)
+
+    var it2 = ld.iterator()
+    it2.end(function (err) {
+      t.error(err)
+    })
   })
 
   t.ok(require('./').DeferredIterator)

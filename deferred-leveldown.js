@@ -43,9 +43,9 @@ DeferredLevelDOWN.prototype._close = function (callback) {
 }
 
 function open (obj) {
-  deferrables.forEach(function (m) {
+  deferrables.concat('iterator').forEach(function (m) {
     obj['_' + m] = function () {
-      this._db[m].apply(this._db, arguments)
+      return this._db[m].apply(this._db, arguments)
     }
   })
 }
@@ -56,18 +56,17 @@ function closed (obj) {
       this._operations.push({ method: m, args: arguments })
     }
   })
+  obj._iterator = function (options) {
+    var it = new DeferredIterator(options)
+    this._iterators.push(it)
+    return it
+  }
 }
 
 closed(DeferredLevelDOWN.prototype)
 
 DeferredLevelDOWN.prototype._isBuffer = function (obj) {
   return Buffer.isBuffer(obj)
-}
-
-DeferredLevelDOWN.prototype._iterator = function (options) {
-  var it = new DeferredIterator(options)
-  this._iterators.push(it)
-  return it
 }
 
 module.exports                  = DeferredLevelDOWN
