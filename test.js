@@ -115,7 +115,6 @@ test('iterators', function (t) {
   it.end(function (err) {
     t.error(err)
     t.ok(nextFirst)
-    t.end()
   })
 
   ld.setDb({ iterator: function (options) {
