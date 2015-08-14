@@ -5,7 +5,7 @@ DeferredLevelDOWN
 
 <img alt="LevelDB Logo" height="100" src="http://leveldb.org/img/logo.svg">
 
-[![Build Status](https://secure.travis-ci.org/Level/deferred-leveldown.png)](http://travis-ci.org/rvagg/deferred-leveldown)
+[![Build Status](https://secure.travis-ci.org/Level/deferred-leveldown.png)](http://travis-ci.org/Level/deferred-leveldown)
 
 [![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/)
 
