@@ -115,7 +115,6 @@ test('iterators', function (t) {
   it.end(function (err) {
     t.error(err)
     t.ok(nextFirst)
-    t.end()
   })
 
   ld.setDb({ iterator: function (options) {
@@ -132,4 +131,34 @@ test('iterators', function (t) {
   t.ok(require('./').DeferredIterator)
 
   t.end()
+})
+
+test('iterator after setDb', function (t) {
+  t.plan(5)
+  var ld = new DeferredLevelDOWN('loc')
+  var nextFirst = false
+
+  ld.setDb({ iterator: function (options) {
+    return {
+        next : function (cb) {
+          cb(null, 'key', 'value')
+        }
+      , end : function (cb) {
+        process.nextTick(cb)
+      }
+    }
+  }})
+  var it = ld.iterator()
+
+  it.next(function (err, key, value) {
+    nextFirst = true
+    t.error(err)
+    t.equal(key, 'key')
+    t.equal(value, 'value')
+  })
+
+  it.end(function (err) {
+    t.error(err)
+    t.ok(nextFirst)
+  })
 })

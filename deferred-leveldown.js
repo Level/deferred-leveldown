@@ -45,6 +45,8 @@ DeferredLevelDOWN.prototype._isBuffer = function (obj) {
 }
 
 DeferredLevelDOWN.prototype._iterator = function (options) {
+  if (this._db)
+    return this._db.iterator.apply(this._db, arguments)
   var it = new DeferredIterator(options)
   this._iterators.push(it)
   return it
