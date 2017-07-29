@@ -63,6 +63,6 @@ DeferredLevelDOWN is only possible due to the excellent work of the following co
 License &amp; copyright
 -------------------
 
-Copyright (c) 2013-2015 DeferredLevelDOWN contributors (listed above).
+Copyright (c) 2013-2017 DeferredLevelDOWN contributors (listed above).
 
 DeferredLevelDOWN is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE.md file for more details.
