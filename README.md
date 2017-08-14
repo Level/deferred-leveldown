@@ -1,6 +1,8 @@
 DeferredLevelDOWN
 =================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Level/deferred-leveldown.svg)](https://greenkeeper.io/)
+
 **A mock LevelDOWN implementation that queues operations while a real LevelDOWN instance is being opened.**
 
 <img alt="LevelDB Logo" height="100" src="http://leveldb.org/img/logo.svg">
