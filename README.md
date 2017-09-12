@@ -1,25 +1,25 @@
-DeferredLevelDOWN
-=================
+# deferred-leveldown
 
-**A mock LevelDOWN implementation that queues operations while a real LevelDOWN instance is being opened.**
+> A mock `abstract-leveldown` implementation that queues operations while a real `abstract-leveldown` instance is being opened.
 
 <img alt="LevelDB Logo" height="100" src="http://leveldb.org/img/logo.svg">
 
 [![Build Status](https://secure.travis-ci.org/Level/deferred-leveldown.png)](http://travis-ci.org/rvagg/deferred-leveldown)
+[![Greenkeeper badge](https://badges.greenkeeper.io/Level/deferred-leveldown.svg)](https://greenkeeper.io/)
 
 [![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/)
 
-**DeferredLevelDOWN** implements the basic [AbstractLevelDOWN](https://github.com/rvagg/node-abstract-leveldown) API so it can be used as a drop-in replacement where LevelDOWN is needed.
+`deferred-leveldown` implements the basic [abstract-leveldown](https://github.com/Level/abstract-leveldown) API so it can be used as a drop-in replacement where `leveldown` is needed.
 
-`put()`, `get()`, `del()` and `batch()` operations are all queued and kept in memory until the LevelDOWN-compatible object has been opened through **DeferredLevelDOWN**'s `open()` method.
+`put()`, `get()`, `del()` and `batch()` operations are all queued and kept in memory until the `abstract-leveldown`-compatible object has been opened through `deferred-leveldown`'s `open()` method.
 
 `batch()` operations will all be replayed as the array form. Chained-batch operations are converted before being stored.
 
 ```js
-var Deferred  = require('deferred-leveldown')
-  , LevelDOWN = require('leveldown')
+const deferred  = require('deferred-leveldown')
+const leveldown = require('leveldown')
 
-var db = Deferred(LevelDOWN('location'))
+const db = deferred(leveldown('location'))
 
 db.put('foo', 'bar', function (err) {
 
@@ -33,15 +33,15 @@ db.open(function (err) {
 Contributing
 ------------
 
-DeferredLevelDOWN is an **OPEN Open Source Project**. This means that:
+`deferred-leveldown` is an **OPEN Open Source Project**. This means that:
 
 > Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
 
-See the [CONTRIBUTING.md](https://github.com/rvagg/node-levelup/blob/master/CONTRIBUTING.md) file for more details.
+See the [CONTRIBUTING.md](https://github.com/Level/levelup/blob/master/CONTRIBUTING.md) file for more details.
 
 ### Contributors
 
-DeferredLevelDOWN is only possible due to the excellent work of the following contributors:
+`deferred-leveldown` is only possible due to the excellent work of the following contributors:
 
 <table><tbody>
 <tr><th align="left">Rod Vagg</th><td><a href="https://github.com/rvagg">GitHub/rvagg</a></td><td><a href="http://twitter.com/rvagg">Twitter/@rvagg</a></td></tr>
@@ -63,6 +63,6 @@ DeferredLevelDOWN is only possible due to the excellent work of the following co
 License &amp; copyright
 -------------------
 
-Copyright (c) 2013-2017 DeferredLevelDOWN contributors (listed above).
+Copyright (c) 2013-2017 `deferred-leveldown` contributors (listed above).
 
-DeferredLevelDOWN is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE.md file for more details.
+`deferred-leveldown` is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE.md file for more details.
