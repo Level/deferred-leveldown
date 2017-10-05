@@ -154,6 +154,74 @@ test('many operations', function (t) {
   })
 })
 
+test('keys and values should not be serialized', function (t) {
+  var DATA = []
+  var ITEMS = [
+    123,
+    'a string',
+    Buffer.from('w00t'),
+    { an: 'object' }
+  ]
+  ITEMS.forEach(function (k) {
+    ITEMS.forEach(function (v) {
+      DATA.push({ key: k, value: v })
+    })
+  })
+
+  function Db (m, fn) {
+    var db = {
+      open: function (options, cb) {
+        process.nextTick(cb)
+      }
+    }
+    var wrapper = function () {
+      wrapper.idx++
+      fn.apply(null, arguments)
+    }
+    wrapper.idx = -1
+    db[m] = wrapper
+    return new DeferredLevelDOWN(db)
+  }
+
+  function noop () {}
+
+  t.test('put', function (t) {
+    var ld = Db('put', function (key, value, cb) {
+      var d = DATA[ld._db.put.idx]
+      t.same(d.key, key, 'key ok')
+      t.same(d.value, value, 'value ok')
+    })
+    DATA.forEach(function (d) { ld.put(d.key, d.value, noop) })
+    ld.open(t.end.bind(t))
+  })
+
+  t.test('get', function (t) {
+    var ld = Db('get', function (key, cb) {
+      t.same(ITEMS[ld._db.get.idx], key, 'key ok')
+    })
+    ITEMS.forEach(function (k) { ld.get(k, noop) })
+    ld.open(t.end.bind(t))
+  })
+
+  t.test('del', function (t) {
+    var ld = Db('del', function (key, cb) {
+      t.same(ITEMS[ld._db.del.idx], key, 'key ok')
+    })
+    ITEMS.forEach(function (d) { ld.del(d.key, noop) })
+    ld.open(t.end.bind(t))
+  })
+
+  t.test('approximateSize', function (t) {
+    var ld = Db('approximateSize', function (start, end, cb) {
+      var expected = ITEMS[ld._db.approximateSize.idx]
+      t.same(start, expected, 'start ok')
+      t.same(end, expected, 'end ok')
+    })
+    ITEMS.forEach(function (k) { ld.approximateSize(k, k, noop) })
+    ld.open(t.end.bind(t))
+  })
+})
+
 test('iterators', function (t) {
   t.plan(8)
 
