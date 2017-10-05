@@ -33,10 +33,11 @@
     "abstract-leveldown": "~2.7.0"
   },
   "devDependencies": {
+    "standard": "^10.0.3",
     "tape": "^4.7.0"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "standard && node test.js"
   },
   "license": "MIT"
 }

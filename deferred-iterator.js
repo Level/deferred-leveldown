@@ -1,6 +1,5 @@
 var util = require('util')
-  , AbstractIterator = require('abstract-leveldown').AbstractIterator
-
+var AbstractIterator = require('abstract-leveldown').AbstractIterator
 
 function DeferredIterator (options) {
   AbstractIterator.call(this, options)
@@ -20,8 +19,7 @@ DeferredIterator.prototype.setDb = function (db) {
 }
 
 DeferredIterator.prototype._operation = function (method, args) {
-  if (this._iterator)
-    return this._iterator[method].apply(this._iterator, args)
+  if (this._iterator) return this._iterator[method].apply(this._iterator, args)
   this._operations.push({ method: method, args: args })
 }
 
@@ -31,4 +29,4 @@ DeferredIterator.prototype._operation = function (method, args) {
   }
 })
 
-module.exports = DeferredIterator;
+module.exports = DeferredIterator

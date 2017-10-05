@@ -1,11 +1,10 @@
-# deferred-leveldown
+# deferred-leveldown <img alt="LevelDB Logo" height="20" src="http://leveldb.org/img/logo.svg" />
 
 > A mock `abstract-leveldown` implementation that queues operations while a real `abstract-leveldown` instance is being opened.
 
-<img alt="LevelDB Logo" height="100" src="http://leveldb.org/img/logo.svg">
-
 [![Build Status](https://travis-ci.org/Level/deferred-leveldown.svg?branch=master)](https://travis-ci.org/Level/deferred-leveldown)
 [![Greenkeeper badge](https://badges.greenkeeper.io/Level/deferred-leveldown.svg)](https://greenkeeper.io/)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 [![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/)
 
