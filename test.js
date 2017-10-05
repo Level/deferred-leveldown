@@ -8,7 +8,7 @@ test('single operation', function (t) {
       t.equal(key, 'foo', 'correct key')
       t.equal(value, 'bar', 'correct value')
       t.deepEqual({}, options, 'empty options')
-      callback('called')
+      callback(null, 'called')
     },
     open: function (options, callback) {
       process.nextTick(callback)
@@ -16,14 +16,15 @@ test('single operation', function (t) {
   }
 
   var ld = new DeferredLevelDOWN(db)
-  ld.put('foo', 'bar', function (v) {
+  ld.put('foo', 'bar', function (err, v) {
+    t.error(err)
     called = v
   })
+
   t.ok(called === false, 'not called')
 
   ld.open(function (err) {
     t.error(err)
-
     t.ok(called === 'called', 'function called')
     t.end()
   })
@@ -42,7 +43,7 @@ test('many operations', function (t) {
         t.equal(value, 'bar2', 'correct value')
         t.deepEqual(options, {}, 'empty options')
       }
-      callback('put' + puts)
+      callback(null, 'put' + puts)
     },
     get: function (key, options, callback) {
       if (gets++ === 0) {
@@ -52,12 +53,12 @@ test('many operations', function (t) {
         t.equal('woo2', key, 'correct key')
         t.deepEqual(options, { asBuffer: true }, 'empty options')
       }
-      callback('gets' + gets)
+      callback(null, 'gets' + gets)
     },
     del: function (key, options, callback) {
       t.equal('blergh', key, 'correct key')
       t.deepEqual(options, {}, 'empty options')
-      callback('del')
+      callback(null, 'del')
     },
     batch: function (arr, options, callback) {
       if (batches++ === 0) {
@@ -71,7 +72,7 @@ test('many operations', function (t) {
           { type: 'put', key: 'k4', value: 'v4' }
         ], 'correct batch')
       }
-      callback('batches' + batches)
+      callback()
     },
     open: function (options, callback) {
       process.nextTick(callback)
@@ -83,19 +84,24 @@ test('many operations', function (t) {
   var gets = 0
   var batches = 0
 
-  ld.put('foo1', 'bar1', function (v) {
+  ld.put('foo1', 'bar1', function (err, v) {
+    t.error(err)
     calls.push({ type: 'put', key: 'foo1', v: v })
   })
-  ld.get('woo1', function (v) {
+  ld.get('woo1', function (err, v) {
+    t.error(err)
     calls.push({ type: 'get', key: 'woo1', v: v })
   })
-  ld.put('foo2', 'bar2', function (v) {
+  ld.put('foo2', 'bar2', function (err, v) {
+    t.error(err)
     calls.push({ type: 'put', key: 'foo2', v: v })
   })
-  ld.get('woo2', function (v) {
+  ld.get('woo2', function (err, v) {
+    t.error(err)
     calls.push({ type: 'get', key: 'woo2', v: v })
   })
-  ld.del('blergh', function (v) {
+  ld.del('blergh', function (err, v) {
+    t.error(err)
     calls.push({ type: 'del', key: 'blergh', v: v })
   })
   ld.batch([
@@ -168,11 +174,8 @@ test('iterators', function (t) {
 
   ld.open(function (err) {
     t.error(err)
-
     var it2 = ld.iterator()
-    it2.end(function (err) {
-      t.error(err)
-    })
+    it2.end(t.error.bind(t))
   })
 
   t.ok(require('./').DeferredIterator)
