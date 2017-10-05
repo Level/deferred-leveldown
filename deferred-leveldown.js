@@ -68,5 +68,13 @@ DeferredLevelDOWN.prototype._isBuffer = function (obj) {
   return Buffer.isBuffer(obj)
 }
 
+DeferredLevelDOWN.prototype._serializeKey = function (key) {
+  return key
+}
+
+DeferredLevelDOWN.prototype._serializeValue = function (value) {
+  return value
+}
+
 module.exports = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
