@@ -61,23 +61,15 @@ test('many operations', function (t) {
     },
     batch: function (arr, options, callback) {
       if (batches++ === 0) {
-        t.deepEqual(
-          arr,
-          [
-            { type: 'put', key: 'k1', value: 'v1' },
-            { type: 'put', key: 'k2', value: 'v2' }
-          ],
-          'correct batch'
-        )
+        t.deepEqual(arr, [
+          { type: 'put', key: 'k1', value: 'v1' },
+          { type: 'put', key: 'k2', value: 'v2' }
+        ], 'correct batch')
       } else {
-        t.deepEqual(
-          arr,
-          [
-            { type: 'put', key: 'k3', value: 'v3' },
-            { type: 'put', key: 'k4', value: 'v4' }
-          ],
-          'correct batch'
-        )
+        t.deepEqual(arr, [
+          { type: 'put', key: 'k3', value: 'v3' },
+          { type: 'put', key: 'k4', value: 'v4' }
+        ], 'correct batch')
       }
       callback('batches' + batches)
     },
@@ -106,15 +98,12 @@ test('many operations', function (t) {
   ld.del('blergh', function (v) {
     calls.push({ type: 'del', key: 'blergh', v: v })
   })
-  ld.batch(
-    [
-      { type: 'put', key: 'k1', value: 'v1' },
-      { type: 'put', key: 'k2', value: 'v2' }
-    ],
-    function () {
-      calls.push({ type: 'batch', keys: 'k1,k2' })
-    }
-  )
+  ld.batch([
+    { type: 'put', key: 'k1', value: 'v1' },
+    { type: 'put', key: 'k2', value: 'v2' }
+  ], function () {
+    calls.push({ type: 'batch', keys: 'k1,k2' })
+  })
   ld
     .batch()
     .put('k3', 'v3')
@@ -129,19 +118,15 @@ test('many operations', function (t) {
     t.error(err)
 
     t.equal(calls.length, 7, 'all functions called')
-    t.deepEqual(
-      calls,
-      [
-        { type: 'put', key: 'foo1', v: 'put1' },
-        { type: 'get', key: 'woo1', v: 'gets1' },
-        { type: 'put', key: 'foo2', v: 'put2' },
-        { type: 'get', key: 'woo2', v: 'gets2' },
-        { type: 'del', key: 'blergh', v: 'del' },
-        { type: 'batch', keys: 'k1,k2' },
-        { type: 'batch', keys: 'k3,k4' }
-      ],
-      'calls correctly behaved'
-    )
+    t.deepEqual(calls, [
+      { type: 'put', key: 'foo1', v: 'put1' },
+      { type: 'get', key: 'woo1', v: 'gets1' },
+      { type: 'put', key: 'foo2', v: 'put2' },
+      { type: 'get', key: 'woo2', v: 'gets2' },
+      { type: 'del', key: 'blergh', v: 'del' },
+      { type: 'batch', keys: 'k1,k2' },
+      { type: 'batch', keys: 'k3,k4' }
+    ], 'calls correctly behaved')
 
     t.end()
   })
