@@ -12,7 +12,7 @@ function DeferredIterator (options) {
 util.inherits(DeferredIterator, AbstractIterator)
 
 DeferredIterator.prototype.setDb = function (db) {
-  var it = (this._iterator = db.iterator(this._options))
+  var it = this._iterator = db.iterator(this._options)
   this._operations.forEach(function (op) {
     it[op.method].apply(it, op.args)
   })
