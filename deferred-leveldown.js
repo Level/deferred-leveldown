@@ -1,14 +1,13 @@
-var util              = require('util')
-  , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
-  , DeferredIterator  = require('./deferred-iterator')
-
-  , deferrables       = 'put get del batch approximateSize'.split(' ')
+var util = require('util'),
+  AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN,
+  DeferredIterator = require('./deferred-iterator'),
+  deferrables = 'put get del batch approximateSize'.split(' ')
 
 function DeferredLevelDOWN (db) {
   AbstractLevelDOWN.call(this, '')
-  this._db         = db
+  this._db = db
   this._operations = []
-  this._iterators  = []
+  this._iterators = []
 }
 
 util.inherits(DeferredLevelDOWN, AbstractLevelDOWN)
@@ -69,5 +68,5 @@ DeferredLevelDOWN.prototype._isBuffer = function (obj) {
   return Buffer.isBuffer(obj)
 }
 
-module.exports                  = DeferredLevelDOWN
+module.exports = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
