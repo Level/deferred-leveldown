@@ -1,5 +1,5 @@
-var test = require('tape'),
-  DeferredLevelDOWN = require('./')
+var test = require('tape')
+var DeferredLevelDOWN = require('./')
 
 test('single operation', function (t) {
   var called = false
@@ -78,10 +78,10 @@ test('many operations', function (t) {
     }
   }
 
-  var ld = new DeferredLevelDOWN(db),
-    puts = 0,
-    gets = 0,
-    batches = 0
+  var ld = new DeferredLevelDOWN(db)
+  var puts = 0
+  var gets = 0
+  var batches = 0
 
   ld.put('foo1', 'bar1', function (v) {
     calls.push({ type: 'put', key: 'foo1', v: v })

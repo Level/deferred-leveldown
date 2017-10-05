@@ -1,7 +1,7 @@
-var util = require('util'),
-  AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN,
-  DeferredIterator = require('./deferred-iterator'),
-  deferrables = 'put get del batch approximateSize'.split(' ')
+var util = require('util')
+var AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
+var DeferredIterator = require('./deferred-iterator')
+var deferrables = 'put get del batch approximateSize'.split(' ')
 
 function DeferredLevelDOWN (db) {
   AbstractLevelDOWN.call(this, '')

@@ -1,5 +1,5 @@
-var util = require('util'),
-  AbstractIterator = require('abstract-leveldown').AbstractIterator
+var util = require('util')
+var AbstractIterator = require('abstract-leveldown').AbstractIterator
 
 function DeferredIterator (options) {
   AbstractIterator.call(this, options)
