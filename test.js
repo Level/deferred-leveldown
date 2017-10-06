@@ -186,39 +186,53 @@ test('keys and values should not be serialized', function (t) {
   function noop () {}
 
   t.test('put', function (t) {
+    var calls = []
     var ld = Db('put', function (key, value, cb) {
-      var d = DATA[ld._db.put.idx]
-      t.same(d.key, key, 'key ok')
-      t.same(d.value, value, 'value ok')
+      calls.push({ key: key, value: value })
     })
     DATA.forEach(function (d) { ld.put(d.key, d.value, noop) })
-    ld.open(t.end.bind(t))
+    ld.open(function (err) {
+      t.error(err, 'no error')
+      t.same(calls, DATA, 'value ok')
+      t.end()
+    })
   })
 
   t.test('get', function (t) {
-    var ld = Db('get', function (key, cb) {
-      t.same(ITEMS[ld._db.get.idx], key, 'key ok')
+    var calls = []
+    var ld = Db('get', function (key, cb) { calls.push(key) })
+    ITEMS.forEach(function (key) { ld.get(key, noop) })
+    ld.open(function (err) {
+      t.error(err, 'no error')
+      t.same(calls, ITEMS, 'value ok')
+      t.end()
     })
-    ITEMS.forEach(function (k) { ld.get(k, noop) })
-    ld.open(t.end.bind(t))
   })
 
   t.test('del', function (t) {
-    var ld = Db('del', function (key, cb) {
-      t.same(ITEMS[ld._db.del.idx], key, 'key ok')
+    var calls = []
+    var ld = Db('del', function (key, cb) { calls.push(key) })
+    ITEMS.forEach(function (key) { ld.del(key, noop) })
+    ld.open(function (err) {
+      t.error(err, 'no error')
+      t.same(calls, ITEMS, 'value ok')
+      t.end()
     })
-    ITEMS.forEach(function (d) { ld.del(d.key, noop) })
-    ld.open(t.end.bind(t))
   })
 
   t.test('approximateSize', function (t) {
+    var calls = []
     var ld = Db('approximateSize', function (start, end, cb) {
-      var expected = ITEMS[ld._db.approximateSize.idx]
-      t.same(start, expected, 'start ok')
-      t.same(end, expected, 'end ok')
+      calls.push({ start: start, end: end })
     })
-    ITEMS.forEach(function (k) { ld.approximateSize(k, k, noop) })
-    ld.open(t.end.bind(t))
+    ITEMS.forEach(function (key) { ld.approximateSize(key, key, noop) })
+    ld.open(function (err) {
+      t.error(err, 'no error')
+      t.same(calls, ITEMS.map(function (i) {
+        return { start: i, end: i }
+      }), 'value ok')
+      t.end()
+    })
   })
 })
 
