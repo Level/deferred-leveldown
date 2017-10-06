@@ -3,10 +3,10 @@
 > A mock `abstract-leveldown` implementation that queues operations while a real `abstract-leveldown` instance is being opened.
 
 [![level badge][level-badge]](https://github.com/level/awesome)
+[![npm](https://img.shields.io/npm/v/deferred-leveldown.svg)](https://www.npmjs.com/package/deferred-leveldown)
 [![Build Status](https://travis-ci.org/Level/deferred-leveldown.svg?branch=master)](https://travis-ci.org/Level/deferred-leveldown)
 [![david](https://img.shields.io/david/level/deferred-leveldown.svg)](https://david-dm.org/level/deferred-leveldown)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![npm](https://img.shields.io/npm/v/deferred-leveldown.svg)](https://www.npmjs.com/package/deferred-leveldown)
 [![npm](https://img.shields.io/npm/dm/deferred-leveldown.svg)](https://www.npmjs.com/package/deferred-leveldown)
 
 `deferred-leveldown` implements the basic [abstract-leveldown](https://github.com/Level/abstract-leveldown) API so it can be used as a drop-in replacement where `leveldown` is needed.
