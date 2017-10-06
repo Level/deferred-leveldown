@@ -1,4 +1,4 @@
-# deferred-leveldown <img alt="LevelDB Logo" height="20" src="http://leveldb.org/img/logo.svg" />
+# deferred-leveldown
 
 > A mock `abstract-leveldown` implementation that queues operations while a real `abstract-leveldown` instance is being opened.
 
