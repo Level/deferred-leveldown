@@ -4,9 +4,8 @@
 
 [![level badge][level-badge]](https://github.com/level/awesome)
 [![Build Status](https://travis-ci.org/Level/deferred-leveldown.svg?branch=master)](https://travis-ci.org/Level/deferred-leveldown)
-[![Greenkeeper badge](https://badges.greenkeeper.io/Level/deferred-leveldown.svg)](https://greenkeeper.io/)
+[![david](https://img.shields.io/david/level/deferred-leveldown.svg)](https://david-dm.org/level/deferred-leveldown)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-
 [![NPM](https://nodei.co/npm/deferred-leveldown.png?compact)](https://nodei.co/npm/deferred-leveldown/)
 
 `deferred-leveldown` implements the basic [abstract-leveldown](https://github.com/Level/abstract-leveldown) API so it can be used as a drop-in replacement where `leveldown` is needed.
