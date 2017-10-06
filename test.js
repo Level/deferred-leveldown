@@ -175,10 +175,8 @@ test('keys and values should not be serialized', function (t) {
       }
     }
     var wrapper = function () {
-      wrapper.idx++
       fn.apply(null, arguments)
     }
-    wrapper.idx = -1
     db[m] = wrapper
     return new DeferredLevelDOWN(db)
   }
