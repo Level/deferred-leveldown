@@ -232,6 +232,14 @@ test('keys and values should not be serialized', function (t) {
       t.end()
     })
   })
+
+  t.test('store not supporting approximateSize', function (t) {
+    var ld = Db('FOO', function () {})
+    t.throws(function () {
+      ld.approximateSize('key', 'key', noop)
+    }, /approximateSize is not a function/)
+    t.end()
+  })
 })
 
 test('iterators', function (t) {
