@@ -55,7 +55,7 @@ function open (self) {
   }
 }
 
-function closed (self, db) {
+function closed (self) {
   deferrables.forEach(function (m) {
     self['_' + m] = function () {
       this._operations.push({ method: m, args: arguments })
