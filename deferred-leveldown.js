@@ -76,10 +76,6 @@ function closed (self) {
   }
 }
 
-DeferredLevelDOWN.prototype._isBuffer = function (obj) {
-  return Buffer.isBuffer(obj)
-}
-
 DeferredLevelDOWN.prototype._serializeKey = function (key) {
   return key
 }
