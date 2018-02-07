@@ -31,6 +31,8 @@ db.open(function (err) {
 })
 ```
 
+**If you are upgrading:** please see [UPGRADING.md](UPGRADING.md).
+
 ## Contributing
 
 `deferred-leveldown` is an **OPEN Open Source Project**. This means that:
