@@ -15,7 +15,7 @@
 * defer `approximateSize()` separately (@ralphtheninja)
 * fixed broken link in `README` and clean up old `.jshintrc` (@ralphtheninja)
 
-**Historical Note** `abstract-leveldown@4.0.0` dropped `approximateSize()` so we needed to handle deferring this method only for stores that has support for it, instead of handing it for all possible stores.
+**Historical Note** `abstract-leveldown@4.0.0` dropped `approximateSize()` so we needed to defer this method separately for stores that support it.
 
 ## [2.0.3] - 2017-11-04
 
