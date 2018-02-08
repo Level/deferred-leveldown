@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [3.0.0] - 2018-02-08
+
 ### Added
 * add `9` to travis (@ralphtheninja)
 
@@ -151,7 +153,8 @@ No changes.
 
 :seedling: First release. (@rvagg)
 
-[Unreleased]: https://github.com/level/deferred-leveldown/compare/v2.0.3...HEAD
+[Unreleased]: https://github.com/level/deferred-leveldown/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/level/deferred-leveldown/compare/v2.0.3...v3.0.0
 [2.0.3]: https://github.com/level/deferred-leveldown/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/level/deferred-leveldown/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/level/deferred-leveldown/compare/v2.0.0...v2.0.1
