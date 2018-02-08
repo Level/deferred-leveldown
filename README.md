@@ -31,8 +31,9 @@ db.open(function (err) {
 })
 ```
 
-Contributing
-------------
+**If you are upgrading:** please see [UPGRADING.md](UPGRADING.md).
+
+## Contributing
 
 `deferred-leveldown` is an **OPEN Open Source Project**. This means that:
 
@@ -60,12 +61,10 @@ See the [CONTRIBUTING.md](https://github.com/Level/community/blob/master/CONTRIB
 <tr><th align="left">James Halliday</th><td><a href="https://github.com/substack">GitHub/substack</a></td><td><a href="https://twitter.com/substack">Twitter/@substack</a></td></tr>
 </tbody></table>
 
-<a name="license"></a>
-License &amp; copyright
--------------------
+## License
 
-Copyright (c) 2013-2017 `deferred-leveldown` contributors (listed above).
+Copyright (c) 2013-2018 `deferred-leveldown` contributors (listed above).
 
-`deferred-leveldown` is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE.md file for more details.
+`deferred-leveldown` is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included [LICENSE.md](LICENSE.md) file for more details.
 
 [level-badge]: http://leveldb.org/img/badge.svg
