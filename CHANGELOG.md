@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [4.0.1] - 2018-05-22
+
+### Changed
+* Upgrade `abstract-leveldown` to `5.0.0` (@ralphtheninja)
+
 ## [4.0.0] - 2018-05-13
 
 ### Added
@@ -164,7 +169,8 @@ No changes.
 
 :seedling: First release. (@rvagg)
 
-[Unreleased]: https://github.com/level/deferred-leveldown/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/level/deferred-leveldown/compare/v4.0.1...HEAD
+[4.0.1]: https://github.com/level/deferred-leveldown/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/level/deferred-leveldown/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/level/deferred-leveldown/compare/v2.0.3...v3.0.0
 [2.0.3]: https://github.com/level/deferred-leveldown/compare/v2.0.2...v2.0.3
@@ -183,4 +189,3 @@ No changes.
 [0.2.0]: https://github.com/level/deferred-leveldown/compare/0.1.0...v0.2.0
 [0.1.0]: https://github.com/level/deferred-leveldown/compare/0.0.1...0.1.0
 [0.0.1]: https://github.com/level/deferred-leveldown/compare/0.0.0...0.0.1
-
