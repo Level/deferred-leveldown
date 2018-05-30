@@ -1,5 +1,5 @@
-var util = require('util')
 var AbstractIterator = require('abstract-leveldown').AbstractIterator
+var inherits = require('inherits')
 
 function DeferredIterator (options) {
   AbstractIterator.call(this, options)
@@ -9,7 +9,7 @@ function DeferredIterator (options) {
   this._operations = []
 }
 
-util.inherits(DeferredIterator, AbstractIterator)
+inherits(DeferredIterator, AbstractIterator)
 
 DeferredIterator.prototype.setDb = function (db) {
   var it = this._iterator = db.iterator(this._options)

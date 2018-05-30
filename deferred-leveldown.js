@@ -1,5 +1,5 @@
-var util = require('util')
 var AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
+var inherits = require('inherits')
 var DeferredIterator = require('./deferred-iterator')
 var deferrables = 'put get del batch'.split(' ')
 
@@ -11,7 +11,7 @@ function DeferredLevelDOWN (db) {
   closed(this)
 }
 
-util.inherits(DeferredLevelDOWN, AbstractLevelDOWN)
+inherits(DeferredLevelDOWN, AbstractLevelDOWN)
 
 DeferredLevelDOWN.prototype._open = function (options, callback) {
   var self = this
