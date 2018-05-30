@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [4.0.2] - 2018-05-30
+
+### Changed
+* Replace `util.inherits` with `inherits` module (@ralphtheninja)
+
 ## [4.0.1] - 2018-05-22
 
 ### Changed
@@ -169,7 +174,8 @@ No changes.
 
 :seedling: First release. (@rvagg)
 
-[Unreleased]: https://github.com/level/deferred-leveldown/compare/v4.0.1...HEAD
+[Unreleased]: https://github.com/level/deferred-leveldown/compare/v4.0.2...HEAD
+[4.0.2]: https://github.com/level/deferred-leveldown/compare/v4.0.1...v4.0.2
 [4.0.1]: https://github.com/level/deferred-leveldown/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/level/deferred-leveldown/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/level/deferred-leveldown/compare/v2.0.3...v3.0.0
