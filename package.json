@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "standard": "^11.0.0",
-    "tape": "^4.7.0"
+    "tape": "4.9.0"
   },
   "scripts": {
     "test": "standard && node test.js"
