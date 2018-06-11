@@ -63,7 +63,7 @@ See the [CONTRIBUTING.md](https://github.com/Level/community/blob/master/CONTRIB
 
 ## License
 
-Copyright (c) 2013-2018 `deferred-leveldown` contributors (listed above).
+Copyright (c) 2013-present `deferred-leveldown` contributors (listed above).
 
 `deferred-leveldown` is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included [LICENSE.md](LICENSE.md) file for more details.
 
