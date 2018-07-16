@@ -290,7 +290,7 @@ test('close error on underlying store calls back with error', function (t) {
   })
 })
 
-test('approximateSize is called on underlying store when store is open', function (t) {
+test('non-deferred approximateSize', function (t) {
   t.plan(4)
 
   var db = {
