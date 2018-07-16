@@ -356,8 +356,8 @@ test('iterator - deferred operations', function (t) {
   t.ok(require('./').DeferredIterator)
 })
 
-test('iterator - direct operations', function (t) {
-  t.plan(6)
+test('iterator - non deferred operation', function (t) {
+  t.plan(4)
 
   var db = {
     iterator: function (options) {
@@ -379,18 +379,11 @@ test('iterator - direct operations', function (t) {
 
   ld.open(function (err) {
     t.error(err, 'no error')
-    var nextFirst = false
 
     it.next(function (err, key, value) {
-      nextFirst = true
       t.error(err, 'no error')
       t.equal(key, 'key')
       t.equal(value, 'value')
-    })
-
-    it.end(function (err) {
-      t.error(err, 'no error')
-      t.ok(nextFirst)
     })
   })
 })
