@@ -242,6 +242,22 @@ test('keys and values should not be serialized', function (t) {
   })
 })
 
+test('_close calls close for underlying store', function (t) {
+  t.plan(2)
+
+  var db = {
+    close: function (callback) {
+      t.pass('close for underlying store is called')
+      process.nextTick(callback)
+    }
+  }
+  var ld = new DeferredLevelDOWN(db)
+
+  ld.close(function (err) {
+    t.error(err, 'no error')
+  })
+})
+
 test('iterators', function (t) {
   t.plan(8)
 
