@@ -19,11 +19,14 @@
     "inherits": "^2.0.3"
   },
   "devDependencies": {
+    "coveralls": "^3.0.2",
+    "nyc": "^12.0.2",
     "standard": "^11.0.0",
     "tape": "^4.7.0"
   },
   "scripts": {
-    "test": "standard && node test.js"
+    "test": "standard && nyc node test.js",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "license": "MIT",
   "engines": {

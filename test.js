@@ -242,7 +242,78 @@ test('keys and values should not be serialized', function (t) {
   })
 })
 
-test('iterators', function (t) {
+test('_close calls close for underlying store', function (t) {
+  t.plan(2)
+
+  var db = {
+    close: function (callback) {
+      t.pass('close for underlying store is called')
+      process.nextTick(callback)
+    }
+  }
+  var ld = new DeferredLevelDOWN(db)
+
+  ld.close(function (err) {
+    t.error(err, 'no error')
+  })
+})
+
+test('open error on underlying store calls back with error', function (t) {
+  t.plan(2)
+
+  var db = {
+    open: function (options, callback) {
+      t.pass('db.open called')
+      process.nextTick(callback, new Error('foo'))
+    }
+  }
+  var ld = new DeferredLevelDOWN(db)
+
+  ld.open(function (err) {
+    t.is(err.message, 'foo')
+  })
+})
+
+test('close error on underlying store calls back with error', function (t) {
+  t.plan(2)
+
+  var db = {
+    close: function (callback) {
+      t.pass('db.close called')
+      process.nextTick(callback, new Error('foo'))
+    }
+  }
+  var ld = new DeferredLevelDOWN(db)
+
+  ld.close(function (err) {
+    t.is(err.message, 'foo')
+  })
+})
+
+test('non-deferred approximateSize', function (t) {
+  t.plan(4)
+
+  var db = {
+    open: function (options, cb) {
+      process.nextTick(cb)
+    },
+    approximateSize: function (start, end, callback) {
+      t.is(start, 'bar')
+      t.is(end, 'foo')
+      process.nextTick(callback)
+    }
+  }
+  var ld = new DeferredLevelDOWN(db)
+
+  ld.open(function (err) {
+    t.error(err)
+    ld.approximateSize('bar', 'foo', function (err) {
+      t.error(err)
+    })
+  })
+})
+
+test('iterator - deferred operations', function (t) {
   t.plan(8)
 
   var db = {
@@ -283,4 +354,36 @@ test('iterators', function (t) {
   })
 
   t.ok(require('./').DeferredIterator)
+})
+
+test('iterator - non deferred operation', function (t) {
+  t.plan(4)
+
+  var db = {
+    iterator: function (options) {
+      return {
+        next: function (cb) {
+          cb(null, 'key', 'value')
+        },
+        end: function (cb) {
+          process.nextTick(cb)
+        }
+      }
+    },
+    open: function (options, callback) {
+      process.nextTick(callback)
+    }
+  }
+  var ld = new DeferredLevelDOWN(db)
+  var it = ld.iterator()
+
+  ld.open(function (err) {
+    t.error(err, 'no error')
+
+    it.next(function (err, key, value) {
+      t.error(err, 'no error')
+      t.equal(key, 'key')
+      t.equal(value, 'value')
+    })
+  })
 })
