@@ -15,7 +15,7 @@
   ],
   "main": "deferred-leveldown.js",
   "dependencies": {
-    "abstract-leveldown": "~5.0.0",
+    "abstract-leveldown": "~6.0.0",
     "inherits": "^2.0.3"
   },
   "devDependencies": {
