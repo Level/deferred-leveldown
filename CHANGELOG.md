@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [5.0.0] - 2018-12-21
+
+### Changed
+* Upgrade `abstract-leveldown` dependency from `~5.0.0` to `~6.0.0` (@ralphtheninja)
+* Upgrade `standard` devDependency from `^11.0.0` to `^12.0.0` (@ralphtheninja)
+* Tweak copyright years for less maintenance (@ralphtheninja)
+
+### Added
+* Add `nyc` and `coveralls` (@ralphtheninja)
+
+### Removed
+* Remove contributors from `package.json` (@ralphtheninja)
+* Remove node 9 (@ralphtheninja)
+
 ## [4.0.2] - 2018-05-30
 
 ### Changed
@@ -174,7 +188,8 @@ No changes.
 
 :seedling: First release. (@rvagg)
 
-[Unreleased]: https://github.com/level/deferred-leveldown/compare/v4.0.2...HEAD
+[Unreleased]: https://github.com/level/deferred-leveldown/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/level/deferred-leveldown/compare/v4.0.2...v5.0.0
 [4.0.2]: https://github.com/level/deferred-leveldown/compare/v4.0.1...v4.0.2
 [4.0.1]: https://github.com/level/deferred-leveldown/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/level/deferred-leveldown/compare/v3.0.0...v4.0.0
