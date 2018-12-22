@@ -12,7 +12,7 @@
 ### Added
 * Add `nyc` and `coveralls` (@ralphtheninja)
 
- ### Removed
+### Removed
 * Remove contributors from `package.json` (@ralphtheninja)
 * Remove node 9 (@ralphtheninja)
 
