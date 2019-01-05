@@ -20,6 +20,9 @@
     "standard": "^12.0.0",
     "tape": "^4.7.0"
   },
+  "hallmark": {
+    "community": "level-community"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Level/deferred-leveldown.git"
