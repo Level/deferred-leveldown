@@ -36,16 +36,14 @@ db.open(function (err) {
 
 ## Contributing
 
-`deferred-leveldown` is an **OPEN Open Source Project**. This means that:
+[`Level/deferred-leveldown`](https://github.com/Level/deferred-leveldown) is an **OPEN Open Source Project**. This means that:
 
 > Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
 
-See the [CONTRIBUTING.md](https://github.com/Level/community/blob/master/CONTRIBUTING.md) file for more details.
+See the [Contribution Guide](https://github.com/Level/community/blob/master/CONTRIBUTING.md) for more details.
 
 ## License
 
-Copyright (c) 2013-present `deferred-leveldown` contributors (listed above).
-
-`deferred-leveldown` is licensed under the MIT license. All rights not explicitly granted in the MIT license are reserved. See the included [LICENSE.md](LICENSE.md) file for more details.
+[MIT](LICENSE.md) © 2013-present Rod Vagg and [Contributors](CONTRIBUTORS.md).
 
 [level-badge]: http://leveldb.org/img/badge.svg
