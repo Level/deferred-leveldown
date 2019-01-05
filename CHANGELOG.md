@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [Unreleased][unreleased]
 
 ## [5.0.0] - 2018-12-21
 
@@ -228,7 +228,7 @@ No changes.
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
 
-[Unreleased]: https://github.com/level/deferred-leveldown/compare/v5.0.0...HEAD
+[unreleased]: https://github.com/level/deferred-leveldown/compare/v5.0.0...HEAD
 
 [5.0.0]: https://github.com/level/deferred-leveldown/compare/v4.0.2...v5.0.0
 
