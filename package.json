@@ -1,7 +1,23 @@
 {
   "name": "deferred-leveldown",
-  "description": "For handling delayed-open on LevelDOWN compatible libraries",
   "version": "5.0.0",
+  "description": "For handling delayed-open on LevelDOWN compatible libraries",
+  "license": "MIT",
+  "main": "deferred-leveldown.js",
+  "scripts": {
+    "test": "standard && nyc node test.js",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "dependencies": {
+    "abstract-leveldown": "~6.0.0",
+    "inherits": "^2.0.3"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "nyc": "^12.0.2",
+    "standard": "^12.0.0",
+    "tape": "^4.7.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Level/deferred-leveldown.git"
@@ -13,22 +29,6 @@
     "levelup",
     "leveldown"
   ],
-  "main": "deferred-leveldown.js",
-  "dependencies": {
-    "abstract-leveldown": "~6.0.0",
-    "inherits": "^2.0.3"
-  },
-  "devDependencies": {
-    "coveralls": "^3.0.2",
-    "nyc": "^12.0.2",
-    "standard": "^12.0.0",
-    "tape": "^4.7.0"
-  },
-  "scripts": {
-    "test": "standard && nyc node test.js",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
-  },
-  "license": "MIT",
   "engines": {
     "node": ">=6"
   }
