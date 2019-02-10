@@ -183,6 +183,8 @@ test('keys and values should not be serialized', function (t) {
 
   function noop () {}
 
+  t.plan(5)
+
   t.test('put', function (t) {
     var calls = []
     var ld = Db('put', function (key, value, cb) {
