@@ -2,6 +2,17 @@
 
 ## [Unreleased][unreleased]
 
+## [5.0.1] - 2019-03-31
+
+### Changed
+
+- Upgrade `nyc` devDependency from `^12.0.2` to `^13.2.0` ([#63](https://github.com/Level/deferred-leveldown/issues/63)) ([**@vweevers**](https://github.com/vweevers))
+- Apply common project tweaks ([#61](https://github.com/Level/deferred-leveldown/issues/61), [#62](https://github.com/Level/deferred-leveldown/issues/62), [`c4d169e`](https://github.com/Level/deferred-leveldown/commit/c4d169e)) ([**@vweevers**](https://github.com/vweevers))
+
+### Fixed
+
+- Fix subtests by adding `t.plan()` ([#65](https://github.com/Level/deferred-leveldown/issues/65)) ([**@vweevers**](https://github.com/vweevers))
+
 ## [5.0.0] - 2018-12-21
 
 ### Changed
@@ -228,7 +239,9 @@ No changes.
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
 
-[unreleased]: https://github.com/level/deferred-leveldown/compare/v5.0.0...HEAD
+[unreleased]: https://github.com/level/deferred-leveldown/compare/v5.0.1...HEAD
+
+[5.0.1]: https://github.com/level/deferred-leveldown/compare/v5.0.0...v5.0.1
 
 [5.0.0]: https://github.com/level/deferred-leveldown/compare/v4.0.2...v5.0.0
 
