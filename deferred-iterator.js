@@ -27,6 +27,10 @@ DeferredIterator.prototype._operation = function (method, args) {
   DeferredIterator.prototype['_' + m] = function () {
     this._operation(m, arguments)
   }
+  // must defer the full call, else error 'this.db._serializeKey is not a function'
+  DeferredIterator.prototype['seek'] = function () {
+    this._operation('seek', arguments)
+  }
 })
 
 module.exports = DeferredIterator
