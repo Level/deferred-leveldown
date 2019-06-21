@@ -345,7 +345,7 @@ test('iterator - deferred operations', function (t) {
   it.seek('foo')
 
   it.next(function (err, key, value) {
-    t.is(seekTarget, 'foo', 'seek was called with currect target')
+    t.is(seekTarget, 'foo', 'seek was called with correct target')
     nextFirst = true
     t.error(err, 'no error')
     t.equal(key, 'key')
@@ -396,7 +396,7 @@ test('iterator - non deferred operation', function (t) {
 
     it.seek('foo')
 
-    t.is(seekTarget, 'foo', 'seek was called with currect target')
+    t.is(seekTarget, 'foo', 'seek was called with correct target')
 
     it.next(function (err, key, value) {
       t.error(err, 'no error')
