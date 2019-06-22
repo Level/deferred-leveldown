@@ -316,11 +316,16 @@ test('non-deferred approximateSize', function (t) {
 })
 
 test('iterator - deferred operations', function (t) {
-  t.plan(8)
+  t.plan(9)
+
+  var seekTarget = false
 
   var db = {
     iterator: function (options) {
       return {
+        seek: function (target) {
+          seekTarget = target
+        },
         next: function (cb) {
           cb(null, 'key', 'value')
         },
@@ -337,7 +342,10 @@ test('iterator - deferred operations', function (t) {
   var it = ld.iterator()
   var nextFirst = false
 
+  it.seek('foo')
+
   it.next(function (err, key, value) {
+    t.is(seekTarget, 'foo', 'seek was called with correct target')
     nextFirst = true
     t.error(err, 'no error')
     t.equal(key, 'key')
@@ -359,13 +367,17 @@ test('iterator - deferred operations', function (t) {
 })
 
 test('iterator - non deferred operation', function (t) {
-  t.plan(4)
+  t.plan(5)
+  var seekTarget = false
 
   var db = {
     iterator: function (options) {
       return {
         next: function (cb) {
           cb(null, 'key', 'value')
+        },
+        seek: function (target) {
+          seekTarget = target
         },
         end: function (cb) {
           process.nextTick(cb)
@@ -381,6 +393,10 @@ test('iterator - non deferred operation', function (t) {
 
   ld.open(function (err) {
     t.error(err, 'no error')
+
+    it.seek('foo')
+
+    t.is(seekTarget, 'foo', 'seek was called with correct target')
 
     it.next(function (err, key, value) {
       t.error(err, 'no error')

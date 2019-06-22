@@ -29,4 +29,9 @@ DeferredIterator.prototype._operation = function (method, args) {
   }
 })
 
+// Must defer seek() rather than _seek() because it requires db._serializeKey to be available
+DeferredIterator.prototype.seek = function () {
+  this._operation('seek', arguments)
+}
+
 module.exports = DeferredIterator
