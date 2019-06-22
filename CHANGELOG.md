@@ -6,11 +6,11 @@
 
 ### Changed
 
-- Update `nyc` devDependency from `^13.2.0` to `^14.0.0` ([#66](https://github.com/Level/deferred-leveldown/issues/66))) ([**@vweevers**](https://github.com/vweevers))
+- Update `nyc` devDependency from `^13.2.0` to `^14.0.0` ([#66](https://github.com/Level/deferred-leveldown/issues/66)) ([**@vweevers**](https://github.com/vweevers))
 
 ### Added
 
-- Support seeking ([#68](https://github.com/Level/deferred-leveldown/issues/68))) ([**@MeirionHughes**](https://github.com/MeirionHughes))
+- Support seeking ([#68](https://github.com/Level/deferred-leveldown/issues/68)) ([**@MeirionHughes**](https://github.com/MeirionHughes))
 
 ## [5.0.1] - 2019-03-31
 
