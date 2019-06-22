@@ -2,6 +2,16 @@
 
 ## [Unreleased][unreleased]
 
+## [5.1.0] - 2019-06-22
+
+### Changed
+
+- Update `nyc` devDependency from `^13.2.0` to `^14.0.0` ([#66](https://github.com/Level/deferred-leveldown/issues/66))) ([**@vweevers**](https://github.com/vweevers))
+
+### Added
+
+- Support seeking ([#68](https://github.com/Level/deferred-leveldown/issues/68))) ([**@MeirionHughes**](https://github.com/MeirionHughes))
+
 ## [5.0.1] - 2019-03-31
 
 ### Changed
@@ -239,7 +249,9 @@ No changes.
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
 
-[unreleased]: https://github.com/level/deferred-leveldown/compare/v5.0.1...HEAD
+[unreleased]: https://github.com/level/deferred-leveldown/compare/v5.1.0...HEAD
+
+[5.1.0]: https://github.com/level/deferred-leveldown/compare/v5.0.1...v5.1.0
 
 [5.0.1]: https://github.com/level/deferred-leveldown/compare/v5.0.0...v5.0.1
 
