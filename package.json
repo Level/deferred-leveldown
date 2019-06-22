@@ -1,6 +1,6 @@
 {
   "name": "deferred-leveldown",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "For handling delayed-open on LevelDOWN compatible libraries",
   "license": "MIT",
   "main": "deferred-leveldown.js",
