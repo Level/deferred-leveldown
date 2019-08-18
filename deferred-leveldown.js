@@ -1,7 +1,8 @@
 var AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
 var inherits = require('inherits')
 var DeferredIterator = require('./deferred-iterator')
-var deferrables = 'put get del batch'.split(' ')
+var deferrables = 'put get del batch clear'.split(' ')
+var optionalDeferrables = 'approximateSize compactRange'.split(' ')
 
 function DeferredLevelDOWN (db) {
   AbstractLevelDOWN.call(this, '')
@@ -48,11 +49,13 @@ function open (self) {
       return this._db[m].apply(this._db, arguments)
     }
   })
-  if (self._db.approximateSize) {
-    self.approximateSize = function () {
-      return this._db.approximateSize.apply(this._db, arguments)
+  optionalDeferrables.forEach(function (m) {
+    if (typeof self._db[m] === 'function') {
+      self[m] = function () {
+        return this._db[m].apply(this._db, arguments)
+      }
     }
-  }
+  })
 }
 
 function closed (self) {
@@ -61,14 +64,13 @@ function closed (self) {
       this._operations.push({ method: m, args: arguments })
     }
   })
-  if (typeof self._db.approximateSize === 'function') {
-    self.approximateSize = function () {
-      this._operations.push({
-        method: 'approximateSize',
-        args: arguments
-      })
+  optionalDeferrables.forEach(function (m) {
+    if (typeof self._db[m] === 'function') {
+      self[m] = function () {
+        this._operations.push({ method: m, args: arguments })
+      }
     }
-  }
+  })
   self._iterator = function (options) {
     var it = new DeferredIterator(options)
     this._iterators.push(it)

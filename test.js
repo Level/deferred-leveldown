@@ -90,6 +90,15 @@ test('many operations', function (t) {
       }
       callback()
     },
+    clear: function (options, callback) {
+      if (clears++ === 0) {
+        t.deepEqual(options, { reverse: false, limit: -1 }, 'default options')
+      } else {
+        t.deepEqual(options, { gt: 'k5', reverse: false, limit: -1 }, 'range option')
+      }
+
+      callback()
+    },
     open: function (options, callback) {
       process.nextTick(callback)
     }
@@ -99,6 +108,7 @@ test('many operations', function (t) {
   var puts = 0
   var gets = 0
   var batches = 0
+  var clears = 0
 
   ld.put('foo1', 'bar1', function (err, v) {
     t.error(err, 'no error')
@@ -107,6 +117,9 @@ test('many operations', function (t) {
   ld.get('woo1', function (err, v) {
     t.error(err, 'no error')
     calls.push({ type: 'get', key: 'woo1', v: v })
+  })
+  ld.clear(function () {
+    calls.push({ type: 'clear' })
   })
   ld.put('foo2', 'bar2', function (err, v) {
     t.error(err, 'no error')
@@ -133,21 +146,26 @@ test('many operations', function (t) {
     .write(function () {
       calls.push({ type: 'batch', keys: 'k3,k4' })
     })
+  ld.clear({ gt: 'k5' }, function () {
+    calls.push({ type: 'clear', gt: 'k5' })
+  })
 
   t.ok(calls.length === 0, 'not called')
 
   ld.open(function (err) {
     t.error(err, 'no error')
 
-    t.equal(calls.length, 7, 'all functions called')
+    t.equal(calls.length, 9, 'all functions called')
     t.deepEqual(calls, [
       { type: 'put', key: 'foo1', v: 'put1' },
       { type: 'get', key: 'woo1', v: 'gets1' },
+      { type: 'clear' },
       { type: 'put', key: 'foo2', v: 'put2' },
       { type: 'get', key: 'woo2', v: 'gets2' },
       { type: 'del', key: 'blergh', v: 'del' },
       { type: 'batch', keys: 'k1,k2' },
-      { type: 'batch', keys: 'k3,k4' }
+      { type: 'batch', keys: 'k3,k4' },
+      { type: 'clear', gt: 'k5' }
     ], 'calls correctly behaved')
 
     t.end()
@@ -183,7 +201,7 @@ test('keys and values should not be serialized', function (t) {
 
   function noop () {}
 
-  t.plan(5)
+  t.plan(8)
 
   t.test('put', function (t) {
     var calls = []
@@ -220,6 +238,19 @@ test('keys and values should not be serialized', function (t) {
     })
   })
 
+  t.test('clear', function (t) {
+    var calls = []
+    var ld = Db('clear', function (opts, cb) { calls.push(opts) })
+    ITEMS.forEach(function (key) { ld.clear({ gt: key }, noop) })
+    ld.open(function (err) {
+      t.error(err, 'no error')
+      t.same(calls, ITEMS.map(function (key) {
+        return { gt: key, reverse: false, limit: -1 }
+      }), 'value ok')
+      t.end()
+    })
+  })
+
   t.test('approximateSize', function (t) {
     var calls = []
     var ld = Db('approximateSize', function (start, end, cb) {
@@ -240,6 +271,29 @@ test('keys and values should not be serialized', function (t) {
     t.throws(function () {
       ld.approximateSize('key', 'key', noop)
     }, /approximateSize is not a function/)
+    t.end()
+  })
+
+  t.test('compactRange', function (t) {
+    var calls = []
+    var ld = Db('compactRange', function (start, end, cb) {
+      calls.push({ start: start, end: end })
+    })
+    ITEMS.forEach(function (key) { ld.compactRange(key, key, noop) })
+    ld.open(function (err) {
+      t.error(err, 'no error')
+      t.same(calls, ITEMS.map(function (i) {
+        return { start: i, end: i }
+      }), 'value ok')
+      t.end()
+    })
+  })
+
+  t.test('store not supporting compactRange', function (t) {
+    var ld = Db('FOO', function () {})
+    t.throws(function () {
+      ld.compactRange('key', 'key', noop)
+    }, /compactRange is not a function/)
     t.end()
   })
 })
@@ -310,6 +364,29 @@ test('non-deferred approximateSize', function (t) {
   ld.open(function (err) {
     t.error(err)
     ld.approximateSize('bar', 'foo', function (err) {
+      t.error(err)
+    })
+  })
+})
+
+test('non-deferred compactRange', function (t) {
+  t.plan(4)
+
+  var db = {
+    open: function (options, cb) {
+      process.nextTick(cb)
+    },
+    compactRange: function (start, end, callback) {
+      t.is(start, 'bar')
+      t.is(end, 'foo')
+      process.nextTick(callback)
+    }
+  }
+  var ld = new DeferredLevelDOWN(db)
+
+  ld.open(function (err) {
+    t.error(err)
+    ld.compactRange('bar', 'foo', function (err) {
       t.error(err)
     })
   })
