@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.2.0] - 2019-09-06
+
+### Changed
+
+- Upgrade `abstract-leveldown` from `~6.0.0` to `~6.1.0` ([#72](https://github.com/Level/deferred-leveldown/issues/72)) ([**@vweevers**](https://github.com/vweevers))
+- Upgrade `hallmark` devDependency from `^0.1.0` to `^2.0.0` ([#70](https://github.com/Level/deferred-leveldown/issues/70), [#74](https://github.com/Level/deferred-leveldown/issues/74)) ([**@vweevers**](https://github.com/vweevers))
+- Upgrade `standard` devDependency from `^12.0.0` to `^14.0.0` ([#69](https://github.com/Level/deferred-leveldown/issues/69), [#73](https://github.com/Level/deferred-leveldown/issues/73)) ([**@vweevers**](https://github.com/vweevers))
+
+### Added
+
+- Defer `db.clear()` and `db.compactRange()` ([#72](https://github.com/Level/deferred-leveldown/issues/72))
+
 ## [5.1.0] - 2019-06-22
 
 ### Changed
@@ -246,6 +258,8 @@ No changes.
 ## 0.0.0 - 2013-09-17
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
+
+[5.2.0]: https://github.com/Level/deferred-leveldown/compare/v5.1.0...v5.2.0
 
 [5.1.0]: https://github.com/Level/deferred-leveldown/compare/v5.0.1...v5.1.0
 
