@@ -1,7 +1,5 @@
 # Changelog
 
-## [Unreleased][unreleased]
-
 ## [5.1.0] - 2019-06-22
 
 ### Changed
@@ -248,8 +246,6 @@ No changes.
 ## 0.0.0 - 2013-09-17
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
-
-[unreleased]: https://github.com/level/deferred-leveldown/compare/v5.1.0...HEAD
 
 [5.1.0]: https://github.com/level/deferred-leveldown/compare/v5.0.1...v5.1.0
 
