@@ -273,7 +273,7 @@ No changes.
 
 [2.0.0-1]: https://github.com/Level/deferred-leveldown/compare/v2.0.0-0...v2.0.0-1
 
-[2.0.0-0]: https://github.com/Level/deferred-leveldown/compare/v1.1.0...v2.0.0-0
+[2.0.0-0]: https://github.com/Level/deferred-leveldown/compare/v1.2.2...v2.0.0-0
 
 [1.2.2]: https://github.com/Level/deferred-leveldown/compare/v1.2.1...v1.2.2
 
