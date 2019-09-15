@@ -1,4 +1,5 @@
 var test = require('tape')
+var reachdown = require('reachdown')
 var DeferredLevelDOWN = require('./')
 var noop = function () {}
 
@@ -521,4 +522,16 @@ test('iterator - is created in order', function (t) {
     t.error(err, 'no error')
     t.same(ld2._db.order, ['put', 'iterator created'])
   })
+})
+
+test('reachdown supports deferred-leveldown', function (t) {
+  // Define just enough methods for reachdown to see this as a real db
+  var db = { open: noop, _batch: noop, _iterator: noop }
+  var ld = new DeferredLevelDOWN(db)
+
+  t.is(ld.type, 'deferred-leveldown')
+  t.is(reachdown(ld, 'deferred-leveldown'), ld)
+  t.is(reachdown(ld), db)
+
+  t.end()
 })

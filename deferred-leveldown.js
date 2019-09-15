@@ -13,6 +13,8 @@ function DeferredLevelDOWN (db) {
 
 inherits(DeferredLevelDOWN, AbstractLevelDOWN)
 
+DeferredLevelDOWN.prototype.type = 'deferred-leveldown'
+
 DeferredLevelDOWN.prototype._open = function (options, callback) {
   var self = this
 
