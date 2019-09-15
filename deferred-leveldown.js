@@ -8,7 +8,6 @@ function DeferredLevelDOWN (db) {
   AbstractLevelDOWN.call(this, '')
   this._db = db
   this._operations = []
-  this._iterators = []
   closed(this)
 }
 
@@ -21,13 +20,14 @@ DeferredLevelDOWN.prototype._open = function (options, callback) {
     if (err) return callback(err)
 
     self._operations.forEach(function (op) {
-      self._db[op.method].apply(self._db, op.args)
+      if (op.iterator) {
+        op.iterator.setDb(self._db)
+      } else {
+        self._db[op.method].apply(self._db, op.args)
+      }
     })
     self._operations = []
-    self._iterators.forEach(function (it) {
-      it.setDb(self._db)
-    })
-    self._iterators = []
+
     open(self)
     callback()
   })
@@ -73,7 +73,7 @@ function closed (self) {
   })
   self._iterator = function (options) {
     var it = new DeferredIterator(options)
-    this._iterators.push(it)
+    this._operations.push({ iterator: it })
     return it
   }
 }

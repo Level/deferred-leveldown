@@ -1,5 +1,6 @@
 var test = require('tape')
 var DeferredLevelDOWN = require('./')
+var noop = function () {}
 
 test('deferred open gets correct options', function (t) {
   var OPTIONS = { foo: 'BAR' }
@@ -480,5 +481,44 @@ test('iterator - non deferred operation', function (t) {
       t.equal(key, 'key')
       t.equal(value, 'value')
     })
+  })
+})
+
+test('iterator - is created in order', function (t) {
+  t.plan(4)
+
+  function db () {
+    return {
+      order: [],
+      iterator: function (options) {
+        this.order.push('iterator created')
+        return {}
+      },
+      put: function (key, value, options, callback) {
+        this.order.push('put')
+      },
+      open: function (options, callback) {
+        process.nextTick(callback)
+      }
+    }
+  }
+
+  var ld1 = new DeferredLevelDOWN(db())
+  var ld2 = new DeferredLevelDOWN(db())
+
+  ld1.iterator()
+  ld1.put('key', 'value', noop)
+
+  ld2.put('key', 'value', noop)
+  ld2.iterator()
+
+  ld1.open(function (err) {
+    t.error(err, 'no error')
+    t.same(ld1._db.order, ['iterator created', 'put'])
+  })
+
+  ld2.open(function (err) {
+    t.error(err, 'no error')
+    t.same(ld2._db.order, ['put', 'iterator created'])
   })
 })
