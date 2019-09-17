@@ -1,5 +1,7 @@
 var test = require('tape')
+var reachdown = require('reachdown')
 var DeferredLevelDOWN = require('./')
+var noop = function () {}
 
 test('deferred open gets correct options', function (t) {
   var OPTIONS = { foo: 'BAR' }
@@ -481,4 +483,55 @@ test('iterator - non deferred operation', function (t) {
       t.equal(value, 'value')
     })
   })
+})
+
+test('iterator - is created in order', function (t) {
+  t.plan(4)
+
+  function db () {
+    return {
+      order: [],
+      iterator: function (options) {
+        this.order.push('iterator created')
+        return {}
+      },
+      put: function (key, value, options, callback) {
+        this.order.push('put')
+      },
+      open: function (options, callback) {
+        process.nextTick(callback)
+      }
+    }
+  }
+
+  var ld1 = new DeferredLevelDOWN(db())
+  var ld2 = new DeferredLevelDOWN(db())
+
+  ld1.iterator()
+  ld1.put('key', 'value', noop)
+
+  ld2.put('key', 'value', noop)
+  ld2.iterator()
+
+  ld1.open(function (err) {
+    t.error(err, 'no error')
+    t.same(ld1._db.order, ['iterator created', 'put'])
+  })
+
+  ld2.open(function (err) {
+    t.error(err, 'no error')
+    t.same(ld2._db.order, ['put', 'iterator created'])
+  })
+})
+
+test('reachdown supports deferred-leveldown', function (t) {
+  // Define just enough methods for reachdown to see this as a real db
+  var db = { open: noop, _batch: noop, _iterator: noop }
+  var ld = new DeferredLevelDOWN(db)
+
+  t.is(ld.type, 'deferred-leveldown')
+  t.is(reachdown(ld, 'deferred-leveldown'), ld)
+  t.is(reachdown(ld), db)
+
+  t.end()
 })
