@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.2.1] - 2019-09-17
+
+### Fixed
+
+- Create iterators in order and add `type` property for `reachdown` ([#75](https://github.com/Level/deferred-leveldown/issues/75)) ([**@vweevers**](https://github.com/vweevers))
+
 ## [5.2.0] - 2019-09-06
 
 ### Changed
@@ -258,6 +264,8 @@ No changes.
 ## 0.0.0 - 2013-09-17
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
+
+[5.2.1]: https://github.com/Level/deferred-leveldown/compare/v5.2.0...v5.2.1
 
 [5.2.0]: https://github.com/Level/deferred-leveldown/compare/v5.1.0...v5.2.0
 
