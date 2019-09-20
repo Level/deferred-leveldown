@@ -74,7 +74,7 @@ function closed (self) {
     }
   })
   self._iterator = function (options) {
-    var it = new DeferredIterator(options)
+    var it = new DeferredIterator(self, options)
     this._operations.push({ iterator: it })
     return it
   }
