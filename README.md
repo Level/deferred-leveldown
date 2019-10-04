@@ -5,7 +5,7 @@
 [![level badge][level-badge]](https://github.com/Level/awesome)
 [![npm](https://img.shields.io/npm/v/deferred-leveldown.svg?label=&logo=npm)](https://www.npmjs.com/package/deferred-leveldown)
 [![Node version](https://img.shields.io/node/v/deferred-leveldown.svg)](https://www.npmjs.com/package/deferred-leveldown)
-[![Travis](https://img.shields.io/travis/Level/deferred-leveldown.svg?logo=travis&label=)](https://travis-ci.org/Level/deferred-leveldown)
+[![Travis](https://img.shields.io/travis/com/Level/deferred-leveldown.svg?logo=travis&label=)](https://travis-ci.com/Level/deferred-leveldown)
 [![Coverage Status](https://coveralls.io/repos/github/Level/deferred-leveldown/badge.svg)](https://coveralls.io/github/Level/deferred-leveldown)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![npm](https://img.shields.io/npm/dm/deferred-leveldown.svg?label=dl)](https://www.npmjs.com/package/deferred-leveldown)
