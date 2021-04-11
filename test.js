@@ -1,9 +1,11 @@
-var test = require('tape')
-var reachdown = require('reachdown')
-var memdown = require('memdown')
-var suite = require('abstract-leveldown/test')
-var DeferredLevelDOWN = require('./')
-var noop = function () {}
+'use strict'
+
+const test = require('tape')
+const reachdown = require('reachdown')
+const memdown = require('memdown')
+const suite = require('abstract-leveldown/test')
+const DeferredLevelDOWN = require('.')
+const noop = function () {}
 
 const testCommon = suite.common({
   test: test,
@@ -33,15 +35,15 @@ suite(testCommon)
 
 // Custom tests
 test('deferred open gets correct options', function (t) {
-  var OPTIONS = { foo: 'BAR' }
-  var db = {
+  const OPTIONS = { foo: 'BAR' }
+  const db = {
     open: function (options, callback) {
       t.same(options, OPTIONS, 'options passed on to open')
       process.nextTick(callback)
     }
   }
 
-  var ld = new DeferredLevelDOWN(db)
+  const ld = new DeferredLevelDOWN(db)
   ld.open(OPTIONS, function (err) {
     t.error(err, 'no error')
     t.end()
@@ -49,8 +51,8 @@ test('deferred open gets correct options', function (t) {
 })
 
 test('single operation', function (t) {
-  var called = false
-  var db = {
+  let called = false
+  const db = {
     put: function (key, value, options, callback) {
       t.equal(key, 'foo', 'correct key')
       t.equal(value, 'bar', 'correct value')
@@ -62,7 +64,7 @@ test('single operation', function (t) {
     }
   }
 
-  var ld = new DeferredLevelDOWN(db)
+  const ld = new DeferredLevelDOWN(db)
   ld.put('foo', 'bar', function (err, v) {
     t.error(err, 'no error')
     called = v
@@ -78,8 +80,8 @@ test('single operation', function (t) {
 })
 
 test('many operations', function (t) {
-  var calls = []
-  var db = {
+  const calls = []
+  const db = {
     put: function (key, value, options, callback) {
       if (puts++ === 0) {
         t.equal(key, 'foo1', 'correct key')
@@ -135,11 +137,12 @@ test('many operations', function (t) {
     }
   }
 
-  var ld = new DeferredLevelDOWN(db)
-  var puts = 0
-  var gets = 0
-  var batches = 0
-  var clears = 0
+  const ld = new DeferredLevelDOWN(db)
+
+  let puts = 0
+  let gets = 0
+  let batches = 0
+  let clears = 0
 
   ld.put('foo1', 'bar1', function (err, v) {
     t.error(err, 'no error')
@@ -204,8 +207,8 @@ test('many operations', function (t) {
 })
 
 test('keys and values should not be serialized', function (t) {
-  var DATA = []
-  var ITEMS = [
+  const DATA = []
+  const ITEMS = [
     123,
     'a string',
     Buffer.from('w00t'),
@@ -218,12 +221,12 @@ test('keys and values should not be serialized', function (t) {
   })
 
   function Db (m, fn) {
-    var db = {
+    const db = {
       open: function (options, cb) {
         process.nextTick(cb)
       }
     }
-    var wrapper = function () {
+    const wrapper = function () {
       fn.apply(null, arguments)
     }
     db[m] = wrapper
@@ -235,8 +238,8 @@ test('keys and values should not be serialized', function (t) {
   t.plan(8)
 
   t.test('put', function (t) {
-    var calls = []
-    var ld = Db('put', function (key, value, cb) {
+    const calls = []
+    const ld = Db('put', function (key, value, cb) {
       calls.push({ key: key, value: value })
     })
     DATA.forEach(function (d) { ld.put(d.key, d.value, noop) })
@@ -248,8 +251,8 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('get', function (t) {
-    var calls = []
-    var ld = Db('get', function (key, cb) { calls.push(key) })
+    const calls = []
+    const ld = Db('get', function (key, cb) { calls.push(key) })
     ITEMS.forEach(function (key) { ld.get(key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
@@ -259,8 +262,8 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('del', function (t) {
-    var calls = []
-    var ld = Db('del', function (key, cb) { calls.push(key) })
+    const calls = []
+    const ld = Db('del', function (key, cb) { calls.push(key) })
     ITEMS.forEach(function (key) { ld.del(key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
@@ -270,8 +273,8 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('clear', function (t) {
-    var calls = []
-    var ld = Db('clear', function (opts, cb) { calls.push(opts) })
+    const calls = []
+    const ld = Db('clear', function (opts, cb) { calls.push(opts) })
     ITEMS.forEach(function (key) { ld.clear({ gt: key }, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
@@ -283,8 +286,8 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('approximateSize', function (t) {
-    var calls = []
-    var ld = Db('approximateSize', function (start, end, cb) {
+    const calls = []
+    const ld = Db('approximateSize', function (start, end, cb) {
       calls.push({ start: start, end: end })
     })
     ITEMS.forEach(function (key) { ld.approximateSize(key, key, noop) })
@@ -298,7 +301,7 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('store not supporting approximateSize', function (t) {
-    var ld = Db('FOO', function () {})
+    const ld = Db('FOO', function () {})
     t.throws(function () {
       ld.approximateSize('key', 'key', noop)
     }, /approximateSize is not a function/)
@@ -306,8 +309,8 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('compactRange', function (t) {
-    var calls = []
-    var ld = Db('compactRange', function (start, end, cb) {
+    const calls = []
+    const ld = Db('compactRange', function (start, end, cb) {
       calls.push({ start: start, end: end })
     })
     ITEMS.forEach(function (key) { ld.compactRange(key, key, noop) })
@@ -321,7 +324,7 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('store not supporting compactRange', function (t) {
-    var ld = Db('FOO', function () {})
+    const ld = Db('FOO', function () {})
     t.throws(function () {
       ld.compactRange('key', 'key', noop)
     }, /compactRange is not a function/)
@@ -332,13 +335,13 @@ test('keys and values should not be serialized', function (t) {
 test('_close calls close for underlying store', function (t) {
   t.plan(2)
 
-  var db = {
+  const db = {
     close: function (callback) {
       t.pass('close for underlying store is called')
       process.nextTick(callback)
     }
   }
-  var ld = new DeferredLevelDOWN(db)
+  const ld = new DeferredLevelDOWN(db)
 
   ld.close(function (err) {
     t.error(err, 'no error')
@@ -348,13 +351,13 @@ test('_close calls close for underlying store', function (t) {
 test('open error on underlying store calls back with error', function (t) {
   t.plan(2)
 
-  var db = {
+  const db = {
     open: function (options, callback) {
       t.pass('db.open called')
       process.nextTick(callback, new Error('foo'))
     }
   }
-  var ld = new DeferredLevelDOWN(db)
+  const ld = new DeferredLevelDOWN(db)
 
   ld.open(function (err) {
     t.is(err.message, 'foo')
@@ -364,13 +367,13 @@ test('open error on underlying store calls back with error', function (t) {
 test('close error on underlying store calls back with error', function (t) {
   t.plan(2)
 
-  var db = {
+  const db = {
     close: function (callback) {
       t.pass('db.close called')
       process.nextTick(callback, new Error('foo'))
     }
   }
-  var ld = new DeferredLevelDOWN(db)
+  const ld = new DeferredLevelDOWN(db)
 
   ld.close(function (err) {
     t.is(err.message, 'foo')
@@ -380,7 +383,7 @@ test('close error on underlying store calls back with error', function (t) {
 test('non-deferred approximateSize', function (t) {
   t.plan(4)
 
-  var db = {
+  const db = {
     open: function (options, cb) {
       process.nextTick(cb)
     },
@@ -390,7 +393,7 @@ test('non-deferred approximateSize', function (t) {
       process.nextTick(callback)
     }
   }
-  var ld = new DeferredLevelDOWN(db)
+  const ld = new DeferredLevelDOWN(db)
 
   ld.open(function (err) {
     t.error(err)
@@ -403,7 +406,7 @@ test('non-deferred approximateSize', function (t) {
 test('non-deferred compactRange', function (t) {
   t.plan(4)
 
-  var db = {
+  const db = {
     open: function (options, cb) {
       process.nextTick(cb)
     },
@@ -413,7 +416,7 @@ test('non-deferred compactRange', function (t) {
       process.nextTick(callback)
     }
   }
-  var ld = new DeferredLevelDOWN(db)
+  const ld = new DeferredLevelDOWN(db)
 
   ld.open(function (err) {
     t.error(err)
@@ -426,9 +429,9 @@ test('non-deferred compactRange', function (t) {
 test('iterator - deferred operations', function (t) {
   t.plan(9)
 
-  var seekTarget = false
+  let seekTarget = false
 
-  var db = {
+  const db = {
     iterator: function (options) {
       return {
         seek: function (target) {
@@ -446,9 +449,9 @@ test('iterator - deferred operations', function (t) {
       process.nextTick(callback)
     }
   }
-  var ld = new DeferredLevelDOWN(db)
-  var it = ld.iterator()
-  var nextFirst = false
+  const ld = new DeferredLevelDOWN(db)
+  const it = ld.iterator()
+  let nextFirst = false
 
   it.seek('foo')
 
@@ -467,7 +470,7 @@ test('iterator - deferred operations', function (t) {
 
   ld.open(function (err) {
     t.error(err, 'no error')
-    var it2 = ld.iterator()
+    const it2 = ld.iterator()
     it2.end(t.error.bind(t))
   })
 
@@ -476,9 +479,9 @@ test('iterator - deferred operations', function (t) {
 
 test('iterator - non deferred operation', function (t) {
   t.plan(5)
-  var seekTarget = false
+  let seekTarget = false
 
-  var db = {
+  const db = {
     iterator: function (options) {
       return {
         next: function (cb) {
@@ -496,8 +499,8 @@ test('iterator - non deferred operation', function (t) {
       process.nextTick(callback)
     }
   }
-  var ld = new DeferredLevelDOWN(db)
-  var it = ld.iterator()
+  const ld = new DeferredLevelDOWN(db)
+  const it = ld.iterator()
 
   ld.open(function (err) {
     t.error(err, 'no error')
@@ -533,8 +536,8 @@ test('iterator - is created in order', function (t) {
     }
   }
 
-  var ld1 = new DeferredLevelDOWN(db())
-  var ld2 = new DeferredLevelDOWN(db())
+  const ld1 = new DeferredLevelDOWN(db())
+  const ld2 = new DeferredLevelDOWN(db())
 
   ld1.iterator()
   ld1.put('key', 'value', noop)
@@ -555,8 +558,8 @@ test('iterator - is created in order', function (t) {
 
 test('reachdown supports deferred-leveldown', function (t) {
   // Define just enough methods for reachdown to see this as a real db
-  var db = { open: noop, _batch: noop, _iterator: noop }
-  var ld = new DeferredLevelDOWN(db)
+  const db = { open: noop, _batch: noop, _iterator: noop }
+  const ld = new DeferredLevelDOWN(db)
 
   t.is(ld.type, 'deferred-leveldown')
   t.is(reachdown(ld, 'deferred-leveldown'), ld)
