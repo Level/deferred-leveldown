@@ -1,7 +1,7 @@
 {
   "name": "deferred-leveldown",
   "version": "5.3.0",
-  "description": "For handling delayed-open on LevelDOWN compatible libraries",
+  "description": "A mock abstract-leveldown implementation that queues operations while a real abstract-leveldown instance is being opened",
   "license": "MIT",
   "main": "deferred-leveldown.js",
   "scripts": {
@@ -12,6 +12,14 @@
     "dependency-check": "dependency-check . test.js",
     "prepublishOnly": "npm run dependency-check"
   },
+  "files": [
+    "deferred-iterator.js",
+    "deferred-leveldown.js",
+    "CHANGELOG.md",
+    "CONTRIBUTORS.md",
+    "LICENSE.md",
+    "UPGRADING.md"
+  ],
   "dependencies": {
     "abstract-leveldown": "^6.3.0",
     "inherits": "^2.0.3"
