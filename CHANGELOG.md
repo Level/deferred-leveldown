@@ -1,5 +1,19 @@
 # Changelog
 
+_**If you are upgrading:** please see [`UPGRADING.md`](UPGRADING.md)._
+
+## [6.0.0] - 2021-04-17
+
+### Changed
+
+- **Breaking:** bump `abstract-leveldown` ([`97eb4b7`](https://github.com/Level/deferred-leveldown/commit/97eb4b7), [`979c4c9`](https://github.com/Level/deferred-leveldown/commit/979c4c9)) (Vincent Weevers)
+- **Breaking:** modernize syntax and bump `standard` ([Level/community#98](https://github.com/Level/community/issues/98)) ([`d43d1c4`](https://github.com/Level/deferred-leveldown/commit/d43d1c4)) (Vincent Weevers)
+- Add `files` to package.json ([`5ee83b2`](https://github.com/Level/deferred-leveldown/commit/5ee83b2)) (Vincent Weevers)
+
+### Removed
+
+- **Breaking:** drop node 6 and 8 ([Level/community#98](https://github.com/Level/community/issues/98)) ([`48a8253`](https://github.com/Level/deferred-leveldown/commit/48a8253)) (Vincent Weevers)
+
 ## [5.3.0] - 2019-10-04
 
 ### Added
@@ -275,6 +289,8 @@ No changes.
 ## 0.0.0 - 2013-09-17
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
+
+[6.0.0]: https://github.com/Level/deferred-leveldown/compare/v5.3.0...v6.0.0
 
 [5.3.0]: https://github.com/Level/deferred-leveldown/compare/v5.2.1...v5.3.0
 

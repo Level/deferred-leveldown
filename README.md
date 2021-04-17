@@ -57,6 +57,6 @@ To sustain [`Level`](https://github.com/Level) and its activities, become a back
 
 ## License
 
-[MIT](LICENSE.md) © 2013-present Rod Vagg and [Contributors](CONTRIBUTORS.md).
+[MIT](LICENSE.md) © 2013-present Rod Vagg and contributors.
 
 [level-badge]: https://leveljs.org/img/badge.svg
