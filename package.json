@@ -20,7 +20,7 @@
     "UPGRADING.md"
   ],
   "dependencies": {
-    "abstract-leveldown": "^7.0.0",
+    "abstract-leveldown": "^7.2.0",
     "inherits": "^2.0.3"
   },
   "devDependencies": {
@@ -28,7 +28,7 @@
     "airtap-playwright": "^1.0.1",
     "dependency-check": "^3.3.0",
     "hallmark": "^3.1.0",
-    "memdown": "^6.0.0",
+    "memdown": "^6.1.0",
     "nyc": "^15.1.0",
     "reachdown": "^1.0.0",
     "standard": "^16.0.3",

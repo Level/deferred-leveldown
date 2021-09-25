@@ -17,13 +17,15 @@ const testCommon = suite.common({
   createIfMissing: false,
   errorIfExists: false,
 
-  // Opt-in to new clear() tests
-  clear: true
+  // Opt-in to new tests
+  clear: true,
+  getMany: true
 })
 
 // Hack: disable failing tests. These fail on serialize tests
 require('abstract-leveldown/test/put-test').args = noop
 require('abstract-leveldown/test/get-test').args = noop
+require('abstract-leveldown/test/get-many-test').args = noop
 require('abstract-leveldown/test/del-test').args = noop
 
 // This fails on "iterator has db reference" test, as expected because
@@ -235,7 +237,7 @@ test('keys and values should not be serialized', function (t) {
 
   function noop () {}
 
-  t.plan(8)
+  t.plan(9)
 
   t.test('put', function (t) {
     const calls = []
@@ -254,6 +256,17 @@ test('keys and values should not be serialized', function (t) {
     const calls = []
     const ld = Db('get', function (key, cb) { calls.push(key) })
     ITEMS.forEach(function (key) { ld.get(key, noop) })
+    ld.open(function (err) {
+      t.error(err, 'no error')
+      t.same(calls, ITEMS, 'value ok')
+      t.end()
+    })
+  })
+
+  t.test('getMany', function (t) {
+    const calls = []
+    const ld = Db('getMany', function (keys, cb) { calls.push(keys[0]) })
+    ITEMS.forEach(function (key) { ld.getMany([key], noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, ITEMS, 'value ok')
