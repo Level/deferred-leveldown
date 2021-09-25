@@ -3,8 +3,8 @@
 const AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
 const inherits = require('inherits')
 const DeferredIterator = require('./deferred-iterator')
-const deferrables = 'put get del batch clear'.split(' ')
-const optionalDeferrables = 'approximateSize compactRange'.split(' ')
+const deferrables = ['put', 'get', 'getMany', 'del', 'batch', 'clear']
+const optionalDeferrables = ['approximateSize', 'compactRange']
 
 function DeferredLevelDOWN (db) {
   AbstractLevelDOWN.call(this, db.supports || {})

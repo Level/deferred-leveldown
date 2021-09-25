@@ -15,7 +15,7 @@
 
 `deferred-leveldown` implements the basic [abstract-leveldown](https://github.com/Level/abstract-leveldown) API so it can be used as a drop-in replacement where `leveldown` is needed.
 
-`put()`, `get()`, `del()`, `batch()` and `clear()` operations are all queued and kept in memory until the `abstract-leveldown`-compatible object has been opened through `deferred-leveldown`'s `open()` method.
+`put()`, `get()`, `getMany()`, `del()`, `batch()` and `clear()` operations are all queued and kept in memory until the `abstract-leveldown`-compatible object has been opened through `deferred-leveldown`'s `open()` method.
 
 `batch()` operations will all be replayed as the array form. Chained-batch operations are converted before being stored.
 
