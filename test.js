@@ -4,6 +4,8 @@ const test = require('tape')
 const reachdown = require('reachdown')
 const memdown = require('memdown')
 const suite = require('abstract-leveldown/test')
+const AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
+const AbstractIterator = require('abstract-leveldown').AbstractIterator
 const DeferredLevelDOWN = require('.')
 const noop = function () {}
 
@@ -38,12 +40,12 @@ suite(testCommon)
 // Custom tests
 test('deferred open gets correct options', function (t) {
   const OPTIONS = { foo: 'BAR' }
-  const db = {
-    open: function (options, callback) {
+  const db = mockDown({
+    _open: function (options, callback) {
       t.same(options, OPTIONS, 'options passed on to open')
-      process.nextTick(callback)
+      this._nextTick(callback)
     }
-  }
+  })
 
   const ld = new DeferredLevelDOWN(db)
   ld.open(OPTIONS, function (err) {
@@ -53,38 +55,42 @@ test('deferred open gets correct options', function (t) {
 })
 
 test('single operation', function (t) {
+  t.plan(7)
+
   let called = false
-  const db = {
-    put: function (key, value, options, callback) {
+
+  const db = mockDown({
+    _put: function (key, value, options, callback) {
+      called = true
+
       t.equal(key, 'foo', 'correct key')
       t.equal(value, 'bar', 'correct value')
       t.deepEqual({}, options, 'empty options')
-      callback(null, 'called')
-    },
-    open: function (options, callback) {
-      process.nextTick(callback)
-    }
-  }
 
-  const ld = new DeferredLevelDOWN(db)
-  ld.put('foo', 'bar', function (err, v) {
-    t.error(err, 'no error')
-    called = v
+      this._nextTick(callback)
+    },
+    _open: function (options, callback) {
+      t.is(called, false, 'not yet called')
+      this._nextTick(callback)
+    }
   })
 
-  t.ok(called === false, 'not called')
+  const ld = new DeferredLevelDOWN(db)
+
+  ld.put('foo', 'bar', function (err) {
+    t.error(err, 'no error')
+  })
 
   ld.open(function (err) {
+    t.is(called, true, 'called')
     t.error(err, 'no error')
-    t.ok(called === 'called', 'function called')
-    t.end()
   })
 })
 
 test('many operations', function (t) {
   const calls = []
-  const db = {
-    put: function (key, value, options, callback) {
+  const db = mockDown({
+    _put: function (key, value, options, callback) {
       if (puts++ === 0) {
         t.equal(key, 'foo1', 'correct key')
         t.equal(value, 'bar1', 'correct value')
@@ -94,9 +100,9 @@ test('many operations', function (t) {
         t.equal(value, 'bar2', 'correct value')
         t.deepEqual(options, {}, 'empty options')
       }
-      callback(null, 'put' + puts)
+      this._nextTick(callback, null, 'put' + puts)
     },
-    get: function (key, options, callback) {
+    _get: function (key, options, callback) {
       if (gets++ === 0) {
         t.equal('woo1', key, 'correct key')
         t.deepEqual(options, { asBuffer: true }, 'empty options')
@@ -104,14 +110,14 @@ test('many operations', function (t) {
         t.equal('woo2', key, 'correct key')
         t.deepEqual(options, { asBuffer: true }, 'empty options')
       }
-      callback(null, 'gets' + gets)
+      this._nextTick(callback, null, 'gets' + gets)
     },
-    del: function (key, options, callback) {
+    _del: function (key, options, callback) {
       t.equal('blergh', key, 'correct key')
       t.deepEqual(options, {}, 'empty options')
-      callback(null, 'del')
+      this._nextTick(callback, null, 'del')
     },
-    batch: function (arr, options, callback) {
+    _batch: function (arr, options, callback) {
       if (batches++ === 0) {
         t.deepEqual(arr, [
           { type: 'put', key: 'k1', value: 'v1' },
@@ -123,21 +129,21 @@ test('many operations', function (t) {
           { type: 'put', key: 'k4', value: 'v4' }
         ], 'correct batch')
       }
-      callback()
+      this._nextTick(callback)
     },
-    clear: function (options, callback) {
+    _clear: function (options, callback) {
       if (clears++ === 0) {
         t.deepEqual(options, { reverse: false, limit: -1 }, 'default options')
       } else {
         t.deepEqual(options, { gt: 'k5', reverse: false, limit: -1 }, 'range option')
       }
 
-      callback()
+      this._nextTick(callback)
     },
-    open: function (options, callback) {
-      process.nextTick(callback)
+    _open: function (options, callback) {
+      this._nextTick(callback)
     }
-  }
+  })
 
   const ld = new DeferredLevelDOWN(db)
 
@@ -190,21 +196,26 @@ test('many operations', function (t) {
 
   ld.open(function (err) {
     t.error(err, 'no error')
+    t.ok(calls.length === 0, 'not called')
 
-    t.equal(calls.length, 9, 'all functions called')
-    t.deepEqual(calls, [
-      { type: 'put', key: 'foo1', v: 'put1' },
-      { type: 'get', key: 'woo1', v: 'gets1' },
-      { type: 'clear' },
-      { type: 'put', key: 'foo2', v: 'put2' },
-      { type: 'get', key: 'woo2', v: 'gets2' },
-      { type: 'del', key: 'blergh', v: 'del' },
-      { type: 'batch', keys: 'k1,k2' },
-      { type: 'batch', keys: 'k3,k4' },
-      { type: 'clear', gt: 'k5' }
-    ], 'calls correctly behaved')
+    // Wait a tick to account for async callbacks
+    // TODO: instead change the order of when we push into `calls`
+    ld._nextTick(function () {
+      t.equal(calls.length, 9, 'all functions called')
+      t.deepEqual(calls, [
+        { type: 'put', key: 'foo1', v: 'put1' },
+        { type: 'get', key: 'woo1', v: 'gets1' },
+        { type: 'clear' },
+        { type: 'put', key: 'foo2', v: 'put2' },
+        { type: 'get', key: 'woo2', v: 'gets2' },
+        { type: 'del', key: 'blergh', v: 'del' },
+        { type: 'batch', keys: 'k1,k2' },
+        { type: 'batch', keys: 'k3,k4' },
+        { type: 'clear', gt: 'k5' }
+      ], 'calls correctly behaved')
 
-    t.end()
+      t.end()
+    })
   })
 })
 
@@ -222,27 +233,17 @@ test('keys and values should not be serialized', function (t) {
     })
   })
 
-  function Db (m, fn) {
-    const db = {
-      open: function (options, cb) {
-        process.nextTick(cb)
-      }
-    }
-    const wrapper = function () {
-      fn.apply(null, arguments)
-    }
-    db[m] = wrapper
-    return new DeferredLevelDOWN(db)
-  }
-
   function noop () {}
+  function Db (methods) { return new DeferredLevelDOWN(mockDown(methods)) }
 
   t.plan(9)
 
   t.test('put', function (t) {
     const calls = []
-    const ld = Db('put', function (key, value, cb) {
-      calls.push({ key: key, value: value })
+    const ld = Db({
+      _put: function (key, value) {
+        calls.push({ key: key, value: value })
+      }
     })
     DATA.forEach(function (d) { ld.put(d.key, d.value, noop) })
     ld.open(function (err) {
@@ -254,7 +255,7 @@ test('keys and values should not be serialized', function (t) {
 
   t.test('get', function (t) {
     const calls = []
-    const ld = Db('get', function (key, cb) { calls.push(key) })
+    const ld = Db({ _get: function (key) { calls.push(key) } })
     ITEMS.forEach(function (key) { ld.get(key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
@@ -265,7 +266,7 @@ test('keys and values should not be serialized', function (t) {
 
   t.test('getMany', function (t) {
     const calls = []
-    const ld = Db('getMany', function (keys, cb) { calls.push(keys[0]) })
+    const ld = Db({ _getMany: function (keys) { calls.push(keys[0]) } })
     ITEMS.forEach(function (key) { ld.getMany([key], noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
@@ -276,7 +277,7 @@ test('keys and values should not be serialized', function (t) {
 
   t.test('del', function (t) {
     const calls = []
-    const ld = Db('del', function (key, cb) { calls.push(key) })
+    const ld = Db({ _del: function (key, cb) { calls.push(key) } })
     ITEMS.forEach(function (key) { ld.del(key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
@@ -287,7 +288,7 @@ test('keys and values should not be serialized', function (t) {
 
   t.test('clear', function (t) {
     const calls = []
-    const ld = Db('clear', function (opts, cb) { calls.push(opts) })
+    const ld = Db({ _clear: function (opts, cb) { calls.push(opts) } })
     ITEMS.forEach(function (key) { ld.clear({ gt: key }, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
@@ -300,8 +301,10 @@ test('keys and values should not be serialized', function (t) {
 
   t.test('approximateSize', function (t) {
     const calls = []
-    const ld = Db('approximateSize', function (start, end, cb) {
-      calls.push({ start: start, end: end })
+    const ld = Db({
+      approximateSize: function (start, end, cb) {
+        calls.push({ start: start, end: end })
+      }
     })
     ITEMS.forEach(function (key) { ld.approximateSize(key, key, noop) })
     ld.open(function (err) {
@@ -314,7 +317,7 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('store not supporting approximateSize', function (t) {
-    const ld = Db('FOO', function () {})
+    const ld = Db({})
     t.throws(function () {
       ld.approximateSize('key', 'key', noop)
     }, /approximateSize is not a function/)
@@ -323,8 +326,10 @@ test('keys and values should not be serialized', function (t) {
 
   t.test('compactRange', function (t) {
     const calls = []
-    const ld = Db('compactRange', function (start, end, cb) {
-      calls.push({ start: start, end: end })
+    const ld = Db({
+      compactRange: function (start, end, cb) {
+        calls.push({ start: start, end: end })
+      }
     })
     ITEMS.forEach(function (key) { ld.compactRange(key, key, noop) })
     ld.open(function (err) {
@@ -337,7 +342,7 @@ test('keys and values should not be serialized', function (t) {
   })
 
   t.test('store not supporting compactRange', function (t) {
-    const ld = Db('FOO', function () {})
+    const ld = Db({})
     t.throws(function () {
       ld.compactRange('key', 'key', noop)
     }, /compactRange is not a function/)
@@ -348,12 +353,12 @@ test('keys and values should not be serialized', function (t) {
 test('_close calls close for underlying store', function (t) {
   t.plan(2)
 
-  const db = {
-    close: function (callback) {
+  const db = mockDown({
+    _close: function (callback) {
       t.pass('close for underlying store is called')
-      process.nextTick(callback)
+      this._nextTick(callback)
     }
-  }
+  })
   const ld = new DeferredLevelDOWN(db)
 
   ld.close(function (err) {
@@ -364,12 +369,12 @@ test('_close calls close for underlying store', function (t) {
 test('open error on underlying store calls back with error', function (t) {
   t.plan(2)
 
-  const db = {
-    open: function (options, callback) {
+  const db = mockDown({
+    _open: function (options, callback) {
       t.pass('db.open called')
-      process.nextTick(callback, new Error('foo'))
+      this._nextTick(callback, new Error('foo'))
     }
-  }
+  })
   const ld = new DeferredLevelDOWN(db)
 
   ld.open(function (err) {
@@ -380,12 +385,12 @@ test('open error on underlying store calls back with error', function (t) {
 test('close error on underlying store calls back with error', function (t) {
   t.plan(2)
 
-  const db = {
-    close: function (callback) {
+  const db = mockDown({
+    _close: function (callback) {
       t.pass('db.close called')
-      process.nextTick(callback, new Error('foo'))
+      this._nextTick(callback, new Error('foo'))
     }
-  }
+  })
   const ld = new DeferredLevelDOWN(db)
 
   ld.close(function (err) {
@@ -393,19 +398,46 @@ test('close error on underlying store calls back with error', function (t) {
   })
 })
 
+test('clear() can schedule other operations itself', function (t) {
+  t.plan(3)
+
+  // The default implementation of _clear() uses iterators and calls the
+  // private _del() method. Test that those don't go through deferred-leveldown
+  // while its state is still 'opening' and is emptying its queue.
+  const db = mockDown({
+    _iterator (options) {
+      return mockIterator(this, {
+        _next (callback) {
+          callback(null, keys.shift())
+        }
+      })
+    },
+    _del (key, options, callback) {
+      t.is(key, 'foo')
+      this._nextTick(callback)
+    }
+  })
+
+  const keys = ['foo']
+  const ld = new DeferredLevelDOWN(db)
+
+  ld.clear((err) => { t.error(err, 'no error') })
+  ld.open((err) => { t.error(err, 'no error') })
+})
+
 test('non-deferred approximateSize', function (t) {
   t.plan(4)
 
-  const db = {
-    open: function (options, cb) {
-      process.nextTick(cb)
+  const db = mockDown({
+    _open: function (options, cb) {
+      this._nextTick(cb)
     },
     approximateSize: function (start, end, callback) {
       t.is(start, 'bar')
       t.is(end, 'foo')
-      process.nextTick(callback)
+      this._nextTick(callback)
     }
-  }
+  })
   const ld = new DeferredLevelDOWN(db)
 
   ld.open(function (err) {
@@ -419,16 +451,16 @@ test('non-deferred approximateSize', function (t) {
 test('non-deferred compactRange', function (t) {
   t.plan(4)
 
-  const db = {
-    open: function (options, cb) {
-      process.nextTick(cb)
+  const db = mockDown({
+    _open: function (options, cb) {
+      this._nextTick(cb)
     },
     compactRange: function (start, end, callback) {
       t.is(start, 'bar')
       t.is(end, 'foo')
-      process.nextTick(callback)
+      this._nextTick(callback)
     }
-  }
+  })
   const ld = new DeferredLevelDOWN(db)
 
   ld.open(function (err) {
@@ -444,24 +476,24 @@ test('iterator - deferred operations', function (t) {
 
   let seekTarget = false
 
-  const db = {
-    iterator: function (options) {
-      return {
-        seek: function (target) {
+  const db = mockDown({
+    _iterator: function (options) {
+      return mockIterator(this, {
+        _seek: function (target) {
           seekTarget = target
         },
-        next: function (cb) {
-          cb(null, 'key', 'value')
+        _next: function (cb) {
+          this._nextTick(cb, null, 'key', 'value')
         },
-        end: function (cb) {
-          process.nextTick(cb)
+        _end: function (cb) {
+          this._nextTick(cb)
         }
-      }
+      })
     },
-    open: function (options, callback) {
-      process.nextTick(callback)
+    _open: function (options, callback) {
+      this._nextTick(callback)
     }
-  }
+  })
   const ld = new DeferredLevelDOWN(db)
   const it = ld.iterator()
   let nextFirst = false
@@ -494,24 +526,24 @@ test('iterator - non deferred operation', function (t) {
   t.plan(5)
   let seekTarget = false
 
-  const db = {
-    iterator: function (options) {
-      return {
-        next: function (cb) {
-          cb(null, 'key', 'value')
+  const db = mockDown({
+    _iterator: function (options) {
+      return mockIterator(this, {
+        _next: function (cb) {
+          this._nextTick(cb, null, 'key', 'value')
         },
-        seek: function (target) {
+        _seek: function (target) {
           seekTarget = target
         },
-        end: function (cb) {
-          process.nextTick(cb)
+        _end: function (cb) {
+          this._nextTick(cb)
         }
-      }
+      })
     },
-    open: function (options, callback) {
-      process.nextTick(callback)
+    _open: function (options, callback) {
+      this._nextTick(callback)
     }
-  }
+  })
   const ld = new DeferredLevelDOWN(db)
   const it = ld.iterator()
 
@@ -534,19 +566,19 @@ test('iterator - is created in order', function (t) {
   t.plan(4)
 
   function db () {
-    return {
+    return mockDown({
       order: [],
-      iterator: function (options) {
+      _iterator: function (options) {
         this.order.push('iterator created')
-        return {}
+        return mockIterator(this, {})
       },
-      put: function (key, value, options, callback) {
+      _put: function (key, value, options, callback) {
         this.order.push('put')
       },
-      open: function (options, callback) {
-        process.nextTick(callback)
+      _open: function (options, callback) {
+        this._nextTick(callback)
       }
-    }
+    })
   }
 
   const ld1 = new DeferredLevelDOWN(db())
@@ -580,3 +612,17 @@ test('reachdown supports deferred-leveldown', function (t) {
 
   t.end()
 })
+
+function mockDown (methods) {
+  function Mock () { AbstractLevelDOWN.call(this) }
+  Object.setPrototypeOf(Mock.prototype, AbstractLevelDOWN.prototype)
+  for (const m in methods) Mock.prototype[m] = methods[m]
+  return new Mock()
+}
+
+function mockIterator (db, methods) {
+  function Mock () { AbstractIterator.call(this, db) }
+  Object.setPrototypeOf(Mock.prototype, AbstractIterator.prototype)
+  for (const m in methods) Mock.prototype[m] = methods[m]
+  return new Mock()
+}
