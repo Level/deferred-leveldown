@@ -24,20 +24,154 @@ const testCommon = suite.common({
   getMany: true
 })
 
-// Hack: disable failing tests. These fail on serialize tests
-require('abstract-leveldown/test/put-test').args = noop
-require('abstract-leveldown/test/get-test').args = noop
-require('abstract-leveldown/test/get-many-test').args = noop
-require('abstract-leveldown/test/del-test').args = noop
-
-// This fails on "iterator has db reference" test, as expected because
-// the return value of db.iterator() depends on whether the db is open.
-require('abstract-leveldown/test/iterator-test').args = noop
-
 // Test abstract-leveldown compliance
 suite(testCommon)
 
 // Custom tests
+test('can open a new db', function (t) {
+  t.plan(8)
+
+  const db = mockDown({
+    _open: function (options, callback) {
+      t.pass('called')
+      this._nextTick(callback)
+    }
+  })
+
+  const ld = new DeferredLevelDOWN(db)
+
+  t.is(db.status, 'new')
+  t.is(ld.status, 'new')
+
+  ld.open(function (err) {
+    t.ifError(err)
+    t.is(db.status, 'open')
+    t.is(ld.status, 'open')
+  })
+
+  t.is(db.status, 'opening')
+  t.is(ld.status, 'opening')
+})
+
+test('can open an open db', function (t) {
+  t.plan(9)
+
+  const db = mockDown({
+    _open: function (options, callback) {
+      t.pass('called')
+      this._nextTick(callback)
+    }
+  })
+
+  db.open(function (err) {
+    t.ifError(err)
+
+    const ld = new DeferredLevelDOWN(db)
+
+    t.is(db.status, 'open')
+    t.is(ld.status, 'new')
+
+    ld.open(function (err) {
+      t.ifError(err)
+      t.is(db.status, 'open')
+      t.is(ld.status, 'open')
+    })
+
+    t.is(db.status, 'open')
+    t.is(ld.status, 'opening')
+  })
+})
+
+test('can open a closed db', function (t) {
+  let opens = 0
+
+  const db = mockDown({
+    _open: function (options, callback) {
+      opens++
+      this._nextTick(callback)
+    }
+  })
+
+  db.open(function (err) {
+    t.ifError(err)
+    t.is(opens, 1)
+
+    db.close(function (err) {
+      t.ifError(err)
+
+      const ld = new DeferredLevelDOWN(db)
+
+      t.is(db.status, 'closed')
+      t.is(ld.status, 'new')
+
+      ld.open(function (err) {
+        t.ifError(err)
+        t.is(opens, 2)
+        t.is(db.status, 'open')
+        t.is(ld.status, 'open')
+        t.end()
+      })
+    })
+  })
+})
+
+test('cannot open a opening db', function (t) {
+  t.plan(7)
+
+  const db = mockDown({
+    _open: function (options, callback) {
+      t.pass('called')
+      this._nextTick(() => this._nextTick(callback))
+    }
+  })
+
+  const ld = new DeferredLevelDOWN(db)
+
+  db.open(function (err) {
+    t.ifError(err)
+    t.is(db.status, 'open')
+  })
+
+  ld.open(function (err) {
+    t.is(err && err.message, 'Database is not open')
+    t.is(ld.status, 'new')
+  })
+
+  t.is(db.status, 'opening')
+  t.is(ld.status, 'opening')
+})
+
+test('cannot open a closing db', function (t) {
+  t.plan(9)
+
+  const db = mockDown({
+    _close: function (callback) {
+      t.pass('called')
+      this._nextTick(() => this._nextTick(callback))
+    }
+  })
+
+  const ld = new DeferredLevelDOWN(db)
+
+  db.open(function (err) {
+    t.ifError(err)
+    t.is(db.status, 'open')
+
+    db.close(function (err) {
+      t.ifError(err)
+      t.is(db.status, 'closed')
+    })
+
+    ld.open(function (err) {
+      t.is(err && err.message, 'Database is not open')
+      t.is(ld.status, 'new')
+    })
+
+    t.is(db.status, 'closing')
+    t.is(ld.status, 'opening')
+  })
+})
+
 test('deferred open gets correct options', function (t) {
   const OPTIONS = { foo: 'BAR' }
   const db = mockDown({
@@ -77,12 +211,12 @@ test('single operation', function (t) {
 
   const ld = new DeferredLevelDOWN(db)
 
-  ld.put('foo', 'bar', function (err) {
+  ld.open(function (err) {
+    t.is(called, true, 'called')
     t.error(err, 'no error')
   })
 
-  ld.open(function (err) {
-    t.is(called, true, 'called')
+  ld.put('foo', 'bar', function (err) {
     t.error(err, 'no error')
   })
 })
@@ -152,6 +286,30 @@ test('many operations', function (t) {
   let batches = 0
   let clears = 0
 
+  ld.open(function (err) {
+    t.error(err, 'no error')
+    t.ok(calls.length === 0, 'not called')
+
+    // Wait a tick to account for async callbacks
+    // TODO: instead change the order of when we push into `calls`
+    ld._nextTick(function () {
+      t.equal(calls.length, 9, 'all functions called')
+      t.deepEqual(calls, [
+        { type: 'put', key: 'foo1', v: 'put1' },
+        { type: 'get', key: 'woo1', v: 'gets1' },
+        { type: 'clear' },
+        { type: 'put', key: 'foo2', v: 'put2' },
+        { type: 'get', key: 'woo2', v: 'gets2' },
+        { type: 'del', key: 'blergh', v: 'del' },
+        { type: 'batch', keys: 'k1,k2' },
+        { type: 'batch', keys: 'k3,k4' },
+        { type: 'clear', gt: 'k5' }
+      ], 'calls correctly behaved')
+
+      t.end()
+    })
+  })
+
   ld.put('foo1', 'bar1', function (err, v) {
     t.error(err, 'no error')
     calls.push({ type: 'put', key: 'foo1', v: v })
@@ -193,29 +351,72 @@ test('many operations', function (t) {
   })
 
   t.ok(calls.length === 0, 'not called')
+})
+
+test('cannot operate on new db', function (t) {
+  t.plan(2)
+
+  const db = mockDown({})
+  const ld = new DeferredLevelDOWN(db)
+
+  ld.put('foo', 'bar', function (err) {
+    t.is(err && err.message, 'Database is not open')
+  })
+
+  try {
+    ld.iterator()
+  } catch (err) {
+    t.is(err.message, 'Database is not open')
+  }
+})
+
+test('cannot operate on closed db', function (t) {
+  t.plan(4)
+
+  const db = mockDown({})
+  const ld = new DeferredLevelDOWN(db)
 
   ld.open(function (err) {
-    t.error(err, 'no error')
-    t.ok(calls.length === 0, 'not called')
+    t.ifError(err)
 
-    // Wait a tick to account for async callbacks
-    // TODO: instead change the order of when we push into `calls`
-    ld._nextTick(function () {
-      t.equal(calls.length, 9, 'all functions called')
-      t.deepEqual(calls, [
-        { type: 'put', key: 'foo1', v: 'put1' },
-        { type: 'get', key: 'woo1', v: 'gets1' },
-        { type: 'clear' },
-        { type: 'put', key: 'foo2', v: 'put2' },
-        { type: 'get', key: 'woo2', v: 'gets2' },
-        { type: 'del', key: 'blergh', v: 'del' },
-        { type: 'batch', keys: 'k1,k2' },
-        { type: 'batch', keys: 'k3,k4' },
-        { type: 'clear', gt: 'k5' }
-      ], 'calls correctly behaved')
+    ld.close(function (err) {
+      t.ifError(err)
 
-      t.end()
+      ld.put('foo', 'bar', function (err) {
+        t.is(err && err.message, 'Database is not open')
+      })
+
+      try {
+        ld.iterator()
+      } catch (err) {
+        t.is(err.message, 'Database is not open')
+      }
     })
+  })
+})
+
+test('cannot operate on closing db', function (t) {
+  t.plan(4)
+
+  const db = mockDown({})
+  const ld = new DeferredLevelDOWN(db)
+
+  ld.open(function (err) {
+    t.ifError(err)
+
+    ld.close(function (err) {
+      t.ifError(err)
+    })
+
+    ld.put('foo', 'bar', function (err) {
+      t.is(err && err.message, 'Database is not open')
+    })
+
+    try {
+      ld.iterator()
+    } catch (err) {
+      t.is(err.message, 'Database is not open')
+    }
   })
 })
 
@@ -245,51 +446,50 @@ test('keys and values should not be serialized', function (t) {
         calls.push({ key: key, value: value })
       }
     })
-    DATA.forEach(function (d) { ld.put(d.key, d.value, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, DATA, 'value ok')
       t.end()
     })
+    DATA.forEach(function (d) { ld.put(d.key, d.value, noop) })
   })
 
   t.test('get', function (t) {
     const calls = []
     const ld = Db({ _get: function (key) { calls.push(key) } })
-    ITEMS.forEach(function (key) { ld.get(key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, ITEMS, 'value ok')
       t.end()
     })
+    ITEMS.forEach(function (key) { ld.get(key, noop) })
   })
 
   t.test('getMany', function (t) {
     const calls = []
     const ld = Db({ _getMany: function (keys) { calls.push(keys[0]) } })
-    ITEMS.forEach(function (key) { ld.getMany([key], noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, ITEMS, 'value ok')
       t.end()
     })
+    ITEMS.forEach(function (key) { ld.getMany([key], noop) })
   })
 
   t.test('del', function (t) {
     const calls = []
     const ld = Db({ _del: function (key, cb) { calls.push(key) } })
-    ITEMS.forEach(function (key) { ld.del(key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, ITEMS, 'value ok')
       t.end()
     })
+    ITEMS.forEach(function (key) { ld.del(key, noop) })
   })
 
   t.test('clear', function (t) {
     const calls = []
     const ld = Db({ _clear: function (opts, cb) { calls.push(opts) } })
-    ITEMS.forEach(function (key) { ld.clear({ gt: key }, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, ITEMS.map(function (key) {
@@ -297,6 +497,7 @@ test('keys and values should not be serialized', function (t) {
       }), 'value ok')
       t.end()
     })
+    ITEMS.forEach(function (key) { ld.clear({ gt: key }, noop) })
   })
 
   t.test('approximateSize', function (t) {
@@ -306,7 +507,6 @@ test('keys and values should not be serialized', function (t) {
         calls.push({ start: start, end: end })
       }
     })
-    ITEMS.forEach(function (key) { ld.approximateSize(key, key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, ITEMS.map(function (i) {
@@ -314,6 +514,7 @@ test('keys and values should not be serialized', function (t) {
       }), 'value ok')
       t.end()
     })
+    ITEMS.forEach(function (key) { ld.approximateSize(key, key, noop) })
   })
 
   t.test('store not supporting approximateSize', function (t) {
@@ -331,7 +532,6 @@ test('keys and values should not be serialized', function (t) {
         calls.push({ start: start, end: end })
       }
     })
-    ITEMS.forEach(function (key) { ld.compactRange(key, key, noop) })
     ld.open(function (err) {
       t.error(err, 'no error')
       t.same(calls, ITEMS.map(function (i) {
@@ -339,6 +539,7 @@ test('keys and values should not be serialized', function (t) {
       }), 'value ok')
       t.end()
     })
+    ITEMS.forEach(function (key) { ld.compactRange(key, key, noop) })
   })
 
   t.test('store not supporting compactRange', function (t) {
@@ -350,7 +551,7 @@ test('keys and values should not be serialized', function (t) {
   })
 })
 
-test('_close calls close for underlying store', function (t) {
+test('close calls close for underlying store', function (t) {
   t.plan(2)
 
   const db = mockDown({
@@ -421,8 +622,42 @@ test('clear() can schedule other operations itself', function (t) {
   const keys = ['foo']
   const ld = new DeferredLevelDOWN(db)
 
-  ld.clear((err) => { t.error(err, 'no error') })
   ld.open((err) => { t.error(err, 'no error') })
+  ld.clear((err) => { t.error(err, 'no error') })
+})
+
+test('chained batch serializes', function (t) {
+  t.plan(7)
+
+  let called = false
+
+  const db = mockDown({
+    _batch: function (array, options, callback) {
+      called = true
+      t.is(array[0] && array[0].key, 'FOO')
+      this._nextTick(callback)
+    },
+    _serializeKey (key) {
+      t.is(called, false, 'not yet called')
+      t.is(key, 'foo')
+      return key.toUpperCase()
+    },
+    _open: function (options, callback) {
+      t.is(called, false, 'not yet called')
+      this._nextTick(callback)
+    }
+  })
+
+  const ld = new DeferredLevelDOWN(db)
+
+  ld.open(function (err) {
+    t.is(called, true, 'called')
+    t.error(err, 'no error')
+  })
+
+  ld.batch().put('foo', 'bar').write(function (err) {
+    t.error(err, 'no error')
+  })
 })
 
 test('non-deferred approximateSize', function (t) {
@@ -471,13 +706,15 @@ test('non-deferred compactRange', function (t) {
   })
 })
 
-test('iterator - deferred operations', function (t) {
-  t.plan(9)
+test('deferred iterator', function (t) {
+  t.plan(11)
 
   let seekTarget = false
 
   const db = mockDown({
     _iterator: function (options) {
+      t.is(options.gt, 'FOO')
+
       return mockIterator(this, {
         _seek: function (target) {
           seekTarget = target
@@ -490,18 +727,29 @@ test('iterator - deferred operations', function (t) {
         }
       })
     },
+    _serializeKey: function (key) {
+      t.is(key, 'foo')
+      return key.toUpperCase()
+    },
     _open: function (options, callback) {
       this._nextTick(callback)
     }
   })
   const ld = new DeferredLevelDOWN(db)
-  const it = ld.iterator()
+
+  ld.open(function (err) {
+    t.error(err, 'no error')
+  })
+
+  const it = ld.iterator({ gt: 'foo' })
+  t.ok(it instanceof DeferredLevelDOWN.DeferredIterator)
+
   let nextFirst = false
 
   it.seek('foo')
 
   it.next(function (err, key, value) {
-    t.is(seekTarget, 'foo', 'seek was called with correct target')
+    t.is(seekTarget, 'FOO', 'seek was called with correct target')
     nextFirst = true
     t.error(err, 'no error')
     t.equal(key, 'key')
@@ -512,18 +760,10 @@ test('iterator - deferred operations', function (t) {
     t.error(err, 'no error')
     t.ok(nextFirst)
   })
-
-  ld.open(function (err) {
-    t.error(err, 'no error')
-    const it2 = ld.iterator()
-    it2.end(t.error.bind(t))
-  })
-
-  t.ok(require('./').DeferredIterator)
 })
 
-test('iterator - non deferred operation', function (t) {
-  t.plan(5)
+test('non-deferred iterator', function (t) {
+  t.plan(6)
   let seekTarget = false
 
   const db = mockDown({
@@ -545,13 +785,14 @@ test('iterator - non deferred operation', function (t) {
     }
   })
   const ld = new DeferredLevelDOWN(db)
-  const it = ld.iterator()
 
   ld.open(function (err) {
     t.error(err, 'no error')
 
-    it.seek('foo')
+    const it = ld.iterator()
+    t.notOk(it instanceof DeferredLevelDOWN.DeferredIterator)
 
+    it.seek('foo')
     t.is(seekTarget, 'foo', 'seek was called with correct target')
 
     it.next(function (err, key, value) {
@@ -562,18 +803,149 @@ test('iterator - non deferred operation', function (t) {
   })
 })
 
+test('deferred iterator - non-deferred operations', function (t) {
+  t.plan(7)
+
+  const ld = new DeferredLevelDOWN(mockDown({
+    _iterator: function (options) {
+      return mockIterator(this, {
+        _seek (target) {
+          t.is(target, 'foo')
+        },
+        _next (cb) {
+          this._nextTick(cb, null, 'key', 'value')
+        }
+      })
+    }
+  }))
+
+  ld.open(function (err) {
+    t.error(err, 'no error')
+
+    it.seek('foo')
+    it.next(function (err, key, value) {
+      t.error(err, 'no error')
+      t.equal(key, 'key')
+      t.equal(value, 'value')
+
+      it.end(function (err) {
+        t.error(err, 'no error')
+      })
+    })
+  })
+
+  const it = ld.iterator({ gt: 'foo' })
+  t.ok(it instanceof DeferredLevelDOWN.DeferredIterator)
+})
+
+test('deferred iterator - cannot operate on closed db', function (t) {
+  t.plan(8)
+
+  const ld = new DeferredLevelDOWN(mockDown({
+    _iterator: function (options) {
+      return mockIterator(this, {
+        _next: function (cb) {
+          t.fail('should not be called')
+        }
+      })
+    }
+  }))
+
+  ld.open(function (err) {
+    t.error(err, 'no error')
+
+    ld.close(function (err) {
+      t.ifError(err)
+
+      it.next(function (err, key, value) {
+        t.is(err && err.message, 'Database is not open')
+      })
+
+      it.next().catch(function (err) {
+        t.is(err.message, 'Database is not open')
+      })
+
+      it.end(function (err) {
+        t.is(err && err.message, 'Database is not open')
+      })
+
+      it.end().catch(function (err) {
+        t.is(err.message, 'Database is not open')
+      })
+
+      try {
+        it.seek('foo')
+      } catch (err) {
+        t.is(err.message, 'Database is not open')
+      }
+    })
+  })
+
+  const it = ld.iterator({ gt: 'foo' })
+  t.ok(it instanceof DeferredLevelDOWN.DeferredIterator)
+})
+
+test('deferred iterator - cannot operate on closing db', function (t) {
+  t.plan(8)
+
+  const ld = new DeferredLevelDOWN(mockDown({
+    _iterator: function (options) {
+      return mockIterator(this, {
+        _next: function (cb) {
+          t.fail('should not be called')
+        }
+      })
+    }
+  }))
+
+  ld.open(function (err) {
+    t.error(err, 'no error')
+
+    ld.close(function (err) {
+      t.ifError(err)
+    })
+
+    it.next(function (err, key, value) {
+      t.is(err && err.message, 'Database is not open')
+    })
+
+    it.next().catch(function (err) {
+      t.is(err.message, 'Database is not open')
+    })
+
+    it.end(function (err) {
+      t.is(err && err.message, 'Database is not open')
+    })
+
+    it.end().catch(function (err) {
+      t.is(err.message, 'Database is not open')
+    })
+
+    try {
+      it.seek('foo')
+    } catch (err) {
+      t.is(err.message, 'Database is not open')
+    }
+  })
+
+  const it = ld.iterator({ gt: 'foo' })
+  t.ok(it instanceof DeferredLevelDOWN.DeferredIterator)
+})
+
 test('iterator - is created in order', function (t) {
   t.plan(4)
 
-  function db () {
+  const order1 = []
+  const order2 = []
+
+  function db (order) {
     return mockDown({
-      order: [],
       _iterator: function (options) {
-        this.order.push('iterator created')
+        order.push('iterator created')
         return mockIterator(this, {})
       },
       _put: function (key, value, options, callback) {
-        this.order.push('put')
+        order.push('put')
       },
       _open: function (options, callback) {
         this._nextTick(callback)
@@ -581,29 +953,56 @@ test('iterator - is created in order', function (t) {
     })
   }
 
-  const ld1 = new DeferredLevelDOWN(db())
-  const ld2 = new DeferredLevelDOWN(db())
+  const ld1 = new DeferredLevelDOWN(db(order1))
+  const ld2 = new DeferredLevelDOWN(db(order2))
+
+  ld1.open(function (err) {
+    t.error(err, 'no error')
+    t.same(order1, ['iterator created', 'put'])
+  })
+
+  ld2.open(function (err) {
+    t.error(err, 'no error')
+    t.same(order2, ['put', 'iterator created'])
+  })
 
   ld1.iterator()
   ld1.put('key', 'value', noop)
 
   ld2.put('key', 'value', noop)
   ld2.iterator()
+})
 
-  ld1.open(function (err) {
-    t.error(err, 'no error')
-    t.same(ld1._db.order, ['iterator created', 'put'])
-  })
+test('for await...of iterator', async function (t) {
+  const db = new DeferredLevelDOWN(memdown())
+  const entries = []
 
-  ld2.open(function (err) {
-    t.error(err, 'no error')
-    t.same(ld2._db.order, ['put', 'iterator created'])
-  })
+  db.open(t.ifError.bind(t))
+  db.batch().put('a', '1').put('b', '2').write(t.ifError.bind(t))
+
+  for await (const kv of db.iterator({ keyAsBuffer: false, valueAsBuffer: false })) {
+    entries.push(kv)
+  }
+
+  t.same(entries, [['a', '1'], ['b', '2']])
+})
+
+test('for await...of iterator (empty)', async function (t) {
+  const db = new DeferredLevelDOWN(memdown())
+  const entries = []
+
+  db.open(t.ifError.bind(t))
+
+  for await (const kv of db.iterator({ keyAsBuffer: false, valueAsBuffer: false })) {
+    entries.push(kv)
+  }
+
+  t.same(entries, [])
 })
 
 test('reachdown supports deferred-leveldown', function (t) {
   // Define just enough methods for reachdown to see this as a real db
-  const db = { open: noop, _batch: noop, _iterator: noop }
+  const db = { status: 'new', open: noop, _batch: noop, _iterator: noop }
   const ld = new DeferredLevelDOWN(db)
 
   t.is(ld.type, 'deferred-leveldown')

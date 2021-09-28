@@ -13,8 +13,10 @@
     "prepublishOnly": "npm run dependency-check"
   },
   "files": [
+    "deferred-chained-batch.js",
     "deferred-iterator.js",
     "deferred-leveldown.js",
+    "util.js",
     "CHANGELOG.md",
     "LICENSE.md",
     "UPGRADING.md"
