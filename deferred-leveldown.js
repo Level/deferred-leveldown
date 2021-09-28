@@ -1,10 +1,17 @@
 'use strict'
 
-const AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
+const { AbstractLevelDOWN } = require('abstract-leveldown')
 const inherits = require('inherits')
 const DeferredIterator = require('./deferred-iterator')
+const DeferredChainedBatch = require('./deferred-chained-batch')
+const getCallback = require('./util').getCallback
+
 const deferrables = ['put', 'get', 'getMany', 'del', 'batch', 'clear']
 const optionalDeferrables = ['approximateSize', 'compactRange']
+
+const kInnerDb = Symbol('innerDb')
+const kOperations = Symbol('operations')
+const kPromise = Symbol('promise')
 
 function DeferredLevelDOWN (db) {
   AbstractLevelDOWN.call(this, db.supports || {})
@@ -17,83 +24,108 @@ function DeferredLevelDOWN (db) {
     }
   }
 
-  this._db = db
-  this._operations = []
+  this[kInnerDb] = db
+  this[kOperations] = []
 
-  closed(this)
+  implement(this)
 }
 
 inherits(DeferredLevelDOWN, AbstractLevelDOWN)
 
 DeferredLevelDOWN.prototype.type = 'deferred-leveldown'
 
-DeferredLevelDOWN.prototype._open = function (options, callback) {
-  this._db.open(options, (err) => {
-    if (err) return callback(err)
+// Backwards compatibility for reachdown and subleveldown
+Object.defineProperty(DeferredLevelDOWN.prototype, '_db', {
+  enumerable: true,
+  get () {
+    return this[kInnerDb]
+  }
+})
 
-    for (const op of this._operations) {
+DeferredLevelDOWN.prototype._open = function (options, callback) {
+  const onopen = (err) => {
+    if (err || this[kInnerDb].status !== 'open') {
+      // TODO: reject scheduled operations
+      return callback(err || new Error('Database is not open'))
+    }
+
+    const operations = this[kOperations]
+    this[kOperations] = []
+
+    for (const op of operations) {
       if (op.iterator) {
-        op.iterator.setDb(this._db)
+        op.iterator.setDb(this[kInnerDb])
       } else {
-        this._db[op.method](...op.args)
+        this[kInnerDb][op.method](...op.args)
       }
     }
 
-    this._operations = []
+    /* istanbul ignore if: assertion */
+    if (this[kOperations].length > 0) {
+      throw new Error('Did not expect further operations')
+    }
 
-    open(this)
     callback()
-  })
+  }
+
+  if (this[kInnerDb].status === 'new' || this[kInnerDb].status === 'closed') {
+    this[kInnerDb].open(options, onopen)
+  } else {
+    this._nextTick(onopen)
+  }
 }
 
 DeferredLevelDOWN.prototype._close = function (callback) {
-  this._db.close((err) => {
-    if (err) return callback(err)
-    closed(this)
-    callback()
-  })
+  this[kInnerDb].close(callback)
 }
 
-function open (self) {
-  for (const m of deferrables.concat('iterator')) {
-    self['_' + m] = function (...args) {
-      return this._db[m](...args)
+DeferredLevelDOWN.prototype._isOperational = function () {
+  return this.status === 'opening'
+}
+
+function implement (self) {
+  const additionalMethods = Object.keys(self.supports.additionalMethods)
+
+  for (const method of deferrables.concat(additionalMethods)) {
+    // Override the public rather than private methods to cover cases where abstract-leveldown
+    // has a fast-path like on db.batch([]) which bypasses _batch() because the array is empty.
+    self[method] = function (...args) {
+      if (method === 'batch' && args.length === 0) {
+        return new DeferredChainedBatch(this)
+      } else if (this.status === 'open') {
+        return this[kInnerDb][method](...args)
+      }
+
+      const callback = getCallback(args, kPromise)
+
+      if (this.status === 'opening') {
+        this[kOperations].push({ method, args })
+      } else {
+        this._nextTick(callback, new Error('Database is not open'))
+      }
+
+      return callback[kPromise]
     }
   }
 
-  for (const m of Object.keys(self.supports.additionalMethods)) {
-    self[m] = function (...args) {
-      return this._db[m](...args)
-    }
-  }
-}
-
-function closed (self) {
-  for (const m of deferrables) {
-    self['_' + m] = function (...args) {
-      this._operations.push({ method: m, args })
-    }
-  }
-
-  for (const m of Object.keys(self.supports.additionalMethods)) {
-    self[m] = function (...args) {
-      this._operations.push({ method: m, args })
+  self.iterator = function (options) {
+    if (this.status === 'open') {
+      return this[kInnerDb].iterator(options)
+    } else if (this.status === 'opening') {
+      const iterator = new DeferredIterator(this, options)
+      this[kOperations].push({ iterator })
+      return iterator
+    } else {
+      throw new Error('Database is not open')
     }
   }
 
-  self._iterator = function (options) {
-    const it = new DeferredIterator(self, options)
-    this._operations.push({ iterator: it })
-    return it
+  for (const method of deferrables.concat(['iterator'])) {
+    self['_' + method] = function () {
+      /* istanbul ignore next: assertion */
+      throw new Error('Did not expect private method to be called: ' + method)
+    }
   }
-}
-
-DeferredLevelDOWN.prototype._serializeKey = function (key) {
-  return key
-}
-
-DeferredLevelDOWN.prototype._serializeValue = function (value) {
-  return value
 }
 
 module.exports = DeferredLevelDOWN
