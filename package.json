@@ -1,6 +1,6 @@
 {
   "name": "deferred-leveldown",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "A mock abstract-leveldown implementation that queues operations while a real abstract-leveldown instance is being opened",
   "license": "MIT",
   "main": "deferred-leveldown.js",

@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.0.0] - 2021-09-30
+
+_If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md)._
+
+### Changed
+
+- **Breaking:** only defer operations while db is opening ([`0e8475f`](https://github.com/Level/deferred-leveldown/commit/0e8475f)) ([#89](https://github.com/Level/deferred-leveldown/issues/89)) (Vincent Weevers)
+
+### Added
+
+- Add `db.getMany(keys)` ([`df5f239`](https://github.com/Level/deferred-leveldown/commit/df5f239)) ([#89](https://github.com/Level/deferred-leveldown/issues/89)) (Vincent Weevers)
+
 ## [6.0.0] - 2021-04-17
 
 _If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md)._
@@ -293,6 +305,8 @@ No changes.
 ## [0.0.0] - 2013-09-17
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
+
+[7.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v7.0.0
 
 [6.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v6.0.0
 

@@ -2,6 +2,10 @@
 
 This document describes breaking changes and how to upgrade. For a complete list of changes including minor and patch releases, please refer to the [changelog](CHANGELOG.md).
 
+## 7.0.0
+
+Previously `deferred-leveldown` would accept operations regardless of the `status` of the inner db. It now only accepts operations while `db.status` is 'opening'.
+
 ## 6.0.0
 
 Legacy range options have been removed ([Level/community#86](https://github.com/Level/community/issues/86)). If you previously did:
