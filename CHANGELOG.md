@@ -1,8 +1,8 @@
 # Changelog
 
-_**If you are upgrading:** please see [`UPGRADING.md`](UPGRADING.md)._
-
 ## [6.0.0] - 2021-04-17
+
+_If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md)._
 
 ### Changed
 
@@ -66,6 +66,8 @@ _**If you are upgrading:** please see [`UPGRADING.md`](UPGRADING.md)._
 
 ## [5.0.0] - 2018-12-21
 
+_If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md)._
+
 ### Changed
 
 - Upgrade `abstract-leveldown` dependency from `~5.0.0` to `~6.0.0` ([**@ralphtheninja**](https://github.com/ralphtheninja))
@@ -95,6 +97,8 @@ _**If you are upgrading:** please see [`UPGRADING.md`](UPGRADING.md)._
 
 ## [4.0.0] - 2018-05-13
 
+_If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md)._
+
 ### Added
 
 - Add node 10 to Travis ([**@ralphtheninja**](https://github.com/ralphtheninja))
@@ -108,6 +112,8 @@ _**If you are upgrading:** please see [`UPGRADING.md`](UPGRADING.md)._
 - Remove node 4 from Travis ([**@ralphtheninja**](https://github.com/ralphtheninja))
 
 ## [3.0.0] - 2018-02-08
+
+_If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md)._
 
 ### Added
 
@@ -126,9 +132,9 @@ _**If you are upgrading:** please see [`UPGRADING.md`](UPGRADING.md)._
 - Defer `approximateSize()` separately ([**@ralphtheninja**](https://github.com/ralphtheninja))
 - Fix broken link in `README` and clean up old `.jshintrc` ([**@ralphtheninja**](https://github.com/ralphtheninja))
 
-**Historical Note** `abstract-leveldown@4.0.0` dropped `approximateSize()` so we needed to defer this method separately for stores that support it.
-
 ## [2.0.3] - 2017-11-04
+
+ _Note: `abstract-leveldown@3.0.0` dropped support for node `0.12` and didn't have any breaking changes to api or behavior, hence a new patch version._
 
 ### Added
 
@@ -138,8 +144,6 @@ _**If you are upgrading:** please see [`UPGRADING.md`](UPGRADING.md)._
 ### Changed
 
 - Upgrade to `abstract-leveldown@3.0.0` ([**@vweevers**](https://github.com/vweevers))
-
-**Historical Note** `abstract-leveldown@3.0.0` dropped support for node `0.12` and didn't have any breaking changes to api or behavior, hence a new patch version.
 
 ## [2.0.2] - 2017-10-06
 
@@ -286,60 +290,62 @@ No changes.
 
 - Update documentation ([**@rvagg**](https://github.com/rvagg))
 
-## 0.0.0 - 2013-09-17
+## [0.0.0] - 2013-09-17
 
 :seedling: First release. ([**@rvagg**](https://github.com/rvagg))
 
-[6.0.0]: https://github.com/Level/deferred-leveldown/compare/v5.3.0...v6.0.0
+[6.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v6.0.0
 
-[5.3.0]: https://github.com/Level/deferred-leveldown/compare/v5.2.1...v5.3.0
+[5.3.0]: https://github.com/Level/deferred-leveldown/releases/tag/v5.3.0
 
-[5.2.1]: https://github.com/Level/deferred-leveldown/compare/v5.2.0...v5.2.1
+[5.2.1]: https://github.com/Level/deferred-leveldown/releases/tag/v5.2.1
 
-[5.2.0]: https://github.com/Level/deferred-leveldown/compare/v5.1.0...v5.2.0
+[5.2.0]: https://github.com/Level/deferred-leveldown/releases/tag/v5.2.0
 
-[5.1.0]: https://github.com/Level/deferred-leveldown/compare/v5.0.1...v5.1.0
+[5.1.0]: https://github.com/Level/deferred-leveldown/releases/tag/v5.1.0
 
-[5.0.1]: https://github.com/Level/deferred-leveldown/compare/v5.0.0...v5.0.1
+[5.0.1]: https://github.com/Level/deferred-leveldown/releases/tag/v5.0.1
 
-[5.0.0]: https://github.com/Level/deferred-leveldown/compare/v4.0.2...v5.0.0
+[5.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v5.0.0
 
-[4.0.2]: https://github.com/Level/deferred-leveldown/compare/v4.0.1...v4.0.2
+[4.0.2]: https://github.com/Level/deferred-leveldown/releases/tag/v4.0.2
 
-[4.0.1]: https://github.com/Level/deferred-leveldown/compare/v4.0.0...v4.0.1
+[4.0.1]: https://github.com/Level/deferred-leveldown/releases/tag/v4.0.1
 
-[4.0.0]: https://github.com/Level/deferred-leveldown/compare/v3.0.0...v4.0.0
+[4.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v4.0.0
 
-[3.0.0]: https://github.com/Level/deferred-leveldown/compare/v2.0.3...v3.0.0
+[3.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v3.0.0
 
-[2.0.3]: https://github.com/Level/deferred-leveldown/compare/v2.0.2...v2.0.3
+[2.0.3]: https://github.com/Level/deferred-leveldown/releases/tag/v2.0.3
 
-[2.0.2]: https://github.com/Level/deferred-leveldown/compare/v2.0.1...v2.0.2
+[2.0.2]: https://github.com/Level/deferred-leveldown/releases/tag/v2.0.2
 
-[2.0.1]: https://github.com/Level/deferred-leveldown/compare/v2.0.0...v2.0.1
+[2.0.1]: https://github.com/Level/deferred-leveldown/releases/tag/v2.0.1
 
-[2.0.0]: https://github.com/Level/deferred-leveldown/compare/v2.0.0-2...v2.0.0
+[2.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v2.0.0
 
-[2.0.0-2]: https://github.com/Level/deferred-leveldown/compare/v2.0.0-1...v2.0.0-2
+[2.0.0-2]: https://github.com/Level/deferred-leveldown/releases/tag/v2.0.0-2
 
-[2.0.0-1]: https://github.com/Level/deferred-leveldown/compare/v2.0.0-0...v2.0.0-1
+[2.0.0-1]: https://github.com/Level/deferred-leveldown/releases/tag/v2.0.0-1
 
-[2.0.0-0]: https://github.com/Level/deferred-leveldown/compare/v1.2.2...v2.0.0-0
+[2.0.0-0]: https://github.com/Level/deferred-leveldown/releases/tag/v2.0.0-0
 
-[1.2.2]: https://github.com/Level/deferred-leveldown/compare/v1.2.1...v1.2.2
+[1.2.2]: https://github.com/Level/deferred-leveldown/releases/tag/v1.2.2
 
-[1.2.1]: https://github.com/Level/deferred-leveldown/compare/v1.2.0...v1.2.1
+[1.2.1]: https://github.com/Level/deferred-leveldown/releases/tag/v1.2.1
 
-[1.2.0]: https://github.com/Level/deferred-leveldown/compare/v1.1.0...v1.2.0
+[1.2.0]: https://github.com/Level/deferred-leveldown/releases/tag/v1.2.0
 
-[1.1.0]: https://github.com/Level/deferred-leveldown/compare/v1.0.0...v1.1.0
+[1.1.0]: https://github.com/Level/deferred-leveldown/releases/tag/v1.1.0
 
-[1.0.0]: https://github.com/Level/deferred-leveldown/compare/v0.3.0...v1.0.0
+[1.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/v1.0.0
 
-[0.3.0]: https://github.com/Level/deferred-leveldown/compare/v0.2.0...v0.3.0
+[0.3.0]: https://github.com/Level/deferred-leveldown/releases/tag/v0.3.0
 
-[0.2.0]: https://github.com/Level/deferred-leveldown/compare/0.1.0...v0.2.0
+[0.2.0]: https://github.com/Level/deferred-leveldown/releases/tag/v0.2.0
 
-[0.1.0]: https://github.com/Level/deferred-leveldown/compare/0.0.1...0.1.0
+[0.1.0]: https://github.com/Level/deferred-leveldown/releases/tag/0.1.0
 
-[0.0.1]: https://github.com/Level/deferred-leveldown/compare/0.0.0...0.0.1
+[0.0.1]: https://github.com/Level/deferred-leveldown/releases/tag/0.0.1
+
+[0.0.0]: https://github.com/Level/deferred-leveldown/releases/tag/0.0.0

@@ -18,7 +18,6 @@
     "deferred-leveldown.js",
     "util.js",
     "CHANGELOG.md",
-    "LICENSE.md",
     "UPGRADING.md"
   ],
   "dependencies": {
