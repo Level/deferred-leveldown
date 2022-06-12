@@ -1,6 +1,8 @@
 # deferred-leveldown
 
-> A mock `abstract-leveldown` implementation that queues operations while a real `abstract-leveldown` instance is being opened.
+**A mock `abstract-leveldown` implementation that queues operations while a real `abstract-leveldown` instance is being opened.**
+
+> :pushpin: This module will soon be [deprecated](https://github.com/Level/community/issues/113), because its functionality is included in [`abstract-level`](https://github.com/Level/abstract-level).
 
 [![level badge][level-badge]](https://github.com/Level/awesome)
 [![npm](https://img.shields.io/npm/v/deferred-leveldown.svg)](https://www.npmjs.com/package/deferred-leveldown)
