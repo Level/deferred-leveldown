@@ -1,17 +1,6 @@
 # deferred-leveldown
 
-**A mock `abstract-leveldown` implementation that queues operations while a real `abstract-leveldown` instance is being opened.**
-
-> :pushpin: This module will soon be [deprecated](https://github.com/Level/community/issues/113), because its functionality is included in [`abstract-level`](https://github.com/Level/abstract-level).
-
-[![level badge][level-badge]](https://github.com/Level/awesome)
-[![npm](https://img.shields.io/npm/v/deferred-leveldown.svg)](https://www.npmjs.com/package/deferred-leveldown)
-[![Node version](https://img.shields.io/node/v/deferred-leveldown.svg)](https://www.npmjs.com/package/deferred-leveldown)
-[![Test](https://img.shields.io/github/workflow/status/Level/deferred-leveldown/Test?label=test)](https://github.com/Level/deferred-leveldown/actions/workflows/test.yml)
-[![Coverage](https://img.shields.io/codecov/c/github/Level/deferred-leveldown?label=&logo=codecov&logoColor=fff)](https://codecov.io/gh/Level/deferred-leveldown)
-[![Standard](https://img.shields.io/badge/standard-informational?logo=javascript&logoColor=fff)](https://standardjs.com)
-[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
-[![Donate](https://img.shields.io/badge/donate-orange?logo=open-collective&logoColor=fff)](https://opencollective.com/level)
+**Superseded by [`abstract-level`](https://github.com/Level/abstract-level). Please see [Frequently Asked Questions](https://github.com/Level/community#faq).**
 
 ## Usage
 
